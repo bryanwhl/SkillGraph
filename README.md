@@ -61,5 +61,5 @@ The project name is intentionally descriptive. Candidate future names:
 
 ## License
 
-License is not selected yet. The PRD recommends choosing an open-source license before implementation begins.
+MIT. See [LICENSE](./LICENSE).
 
