@@ -1,0 +1,59 @@
+{
+  "task": "Make this React dashboard feel polished and production-ready.",
+  "agent": "codex",
+  "budget_tokens": 4000,
+  "selected": [
+    {
+      "node": "web-development",
+      "depth": "summary",
+      "status": "virtual",
+      "reason": "Provides broad ancestor context for web application work."
+    },
+    {
+      "node": "frontend",
+      "depth": "summary",
+      "status": "virtual",
+      "reason": "Narrows the task to user-facing interface implementation."
+    },
+    {
+      "node": "frontend-design",
+      "depth": "full",
+      "status": "remote",
+      "source": "https://skills.sh/anthropics/skills/frontend-design",
+      "reason": "Directly matches the request for UI polish and production-quality visual design."
+    },
+    {
+      "node": "react-best-practices",
+      "depth": "capability_card",
+      "status": "remote",
+      "source": "https://skills.sh/vercel-labs/agent-skills/react-best-practices",
+      "reason": "Potentially relevant because the user mentioned React; expand after repo inspection confirms framework details."
+    },
+    {
+      "node": "visual-qa",
+      "depth": "summary",
+      "status": "local",
+      "reason": "Useful for final verification after frontend changes are implemented."
+    }
+  ],
+  "frontier": [
+    {
+      "node": "accessibility-review",
+      "reason": "May be needed if the UI change touches navigation, forms, contrast, or keyboard workflows."
+    },
+    {
+      "node": "tailwind-patterns",
+      "reason": "Expand only if the repository uses Tailwind."
+    }
+  ],
+  "missing": [
+    {
+      "node": "frontend-design",
+      "install_command": "npx skills add anthropics/skills@frontend-design",
+      "requires_user_approval": true
+    }
+  ],
+  "conflicts": [],
+  "estimated_tokens": 3120
+}
+

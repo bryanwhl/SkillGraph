@@ -1,0 +1,63 @@
+nodes:
+  - id: web-development
+    title: Web Development
+    kind: domain
+    description: Broad context for building web applications.
+
+  - id: frontend
+    title: Frontend
+    kind: domain
+    description: User-facing application interface work.
+
+  - id: frontend-design
+    title: Frontend Design
+    kind: workflow
+    source:
+      type: skills_sh
+      url: https://skills.sh/anthropics/skills/frontend-design
+    capabilities:
+      - visual_hierarchy
+      - responsive_layout
+      - interaction_polish
+
+  - id: react-best-practices
+    title: React Best Practices
+    kind: framework
+    source:
+      type: skills_sh
+      url: https://skills.sh/vercel-labs/agent-skills/react-best-practices
+    applies_to:
+      - react
+      - nextjs
+
+edges:
+  - from: web-development
+    to: frontend
+    type: contains
+    confidence: 1.0
+    source:
+      kind: manual
+
+  - from: frontend
+    to: frontend-design
+    type: contains
+    confidence: 1.0
+    source:
+      kind: manual
+
+  - from: react-best-practices
+    to: frontend
+    type: specializes
+    confidence: 0.8
+    source:
+      kind: inferred
+      method: taxonomy
+
+  - from: frontend-design
+    to: accessibility-review
+    type: complements
+    confidence: 0.7
+    source:
+      kind: inferred
+      method: llm
+
