@@ -1,0 +1,152 @@
+#!/usr/bin/env node
+import { Command } from "commander";
+import { expandNode, type ExpandDepth } from "../resolver/expand.js";
+import { explainResolution, resolveTask } from "../resolver/plan.js";
+import { searchSkills } from "../resolver/retrieve.js";
+import { indexSkills } from "../graph/builder.js";
+import {
+  loadGraph,
+  loadLastResolution,
+  saveGraph,
+  saveLastResolution,
+} from "../graph/store.js";
+import {
+  formatIndexSummary,
+  formatResolutionMarkdown,
+  formatSearchMarkdown,
+} from "../format/markdown.js";
+import { collectOption, runtimeOptions } from "./options.js";
+
+const program = new Command();
+
+program
+  .name("skillgraph")
+  .description("Local-first skill graph resolver for AI agent skills")
+  .version("0.1.0")
+  .option("--cwd <path>", "workspace directory")
+  .option("--skill-root <path>", "skill root to index", collectOption, [])
+  .option("--graph <path>", "manual skillgraph YAML file", collectOption, []);
+
+program
+  .command("index")
+  .description("Index local skills and manual graph files")
+  .option("--format <format>", "json or markdown", "markdown")
+  .action(async (options: { format: string }) => {
+    const runtime = runtimeOptions(program.opts());
+    const graph = await indexSkills(runtime);
+    await saveGraph(runtime.cwd, graph);
+    writeOutput(
+      options.format,
+      graph,
+      () => formatIndexSummary(graph),
+    );
+  });
+
+program
+  .command("search")
+  .description("Search indexed skills")
+  .argument("<query>", "search query")
+  .option("--format <format>", "json or markdown", "markdown")
+  .option("--limit <number>", "maximum result count", parseInteger, 10)
+  .action(async (query: string, options: { format: string; limit: number }) => {
+    const runtime = runtimeOptions(program.opts());
+    const graph = await loadGraph(runtime.cwd);
+    const results = searchSkills(graph, query, options.limit);
+    writeOutput(
+      options.format,
+      { query, results },
+      () => formatSearchMarkdown(results),
+    );
+  });
+
+program
+  .command("resolve")
+  .description("Resolve a task into a budget-aware skill context plan")
+  .argument("<task>", "task to resolve")
+  .option("--agent <agent>", "agent runtime", "codex")
+  .option("--budget <tokens>", "token budget", parseInteger, 4000)
+  .option("--format <format>", "json or markdown", "markdown")
+  .action(
+    async (
+      task: string,
+      options: { agent: string; budget: number; format: string },
+    ) => {
+      const runtime = runtimeOptions(program.opts());
+      const graph = await loadGraph(runtime.cwd);
+      const resolution = resolveTask(graph, {
+        task,
+        agent: options.agent,
+        budgetTokens: options.budget,
+      });
+      await saveLastResolution(runtime.cwd, resolution);
+      writeOutput(
+        options.format,
+        resolution,
+        () => formatResolutionMarkdown(resolution),
+      );
+    },
+  );
+
+program
+  .command("expand")
+  .description("Expand one node to a requested context depth")
+  .argument("<node>", "node id")
+  .option("--depth <depth>", "l0, l1, l2, l3, l4, full, summary, capability_card", "l1")
+  .option("--format <format>", "json or markdown", "markdown")
+  .action(async (node: string, options: { depth: ExpandDepth; format: string }) => {
+    const runtime = runtimeOptions(program.opts());
+    const graph = await loadGraph(runtime.cwd);
+    const expanded = await expandNode(graph, node, options.depth);
+    writeOutput(options.format, expanded, () => `${expanded.content}\n`);
+  });
+
+program
+  .command("explain")
+  .description("Explain the last resolution")
+  .option("--last", "explain the last saved resolution", true)
+  .option("--format <format>", "json or markdown", "markdown")
+  .action(async (options: { format: string }) => {
+    const runtime = runtimeOptions(program.opts());
+    const resolution = await loadLastResolution(runtime.cwd);
+    writeOutput(options.format, resolution, () => explainResolution(resolution));
+  });
+
+program
+  .command("install")
+  .description("Show a safe, approval-required install plan for a missing remote skill")
+  .argument("<node>", "node id")
+  .action((node: string) => {
+    process.stdout.write(
+      [
+        `Remote installation for ${node} is intentionally dry-run only in v0.1.`,
+        "Review the node source and run the displayed install command manually after approval.",
+        "",
+      ].join("\n"),
+    );
+  });
+
+program.parseAsync().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  process.stderr.write(`${message}\n`);
+  process.exitCode = 1;
+});
+
+function parseInteger(value: string): number {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) {
+    throw new Error(`Expected integer, received ${value}`);
+  }
+  return parsed;
+}
+
+function writeOutput<T>(
+  format: string,
+  value: T,
+  markdown: () => string,
+): void {
+  if (format === "json") {
+    process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
+    return;
+  }
+  process.stdout.write(markdown());
+}

@@ -19,7 +19,83 @@ The goal is not to replace skills.sh, Claude Skills, Codex Skills, or local `SKI
 
 ## Status
 
-This repository currently contains the product definition and design documents only. It intentionally does not include a first implementation yet.
+This repository now includes the first local-first CLI implementation for SkillGraph Resolver.
+
+The current launch scope is intentionally small: local skill indexing, local search, deterministic graph resolution, context expansion, last-resolution explanations, and a companion agent skill. Hosted sync, user accounts, telemetry, and automatic remote installs are out of scope for v0.1.
+
+## Quickstart
+
+Install dependencies and build the CLI:
+
+```bash
+npm install
+npm run build
+```
+
+Index local project and user skills:
+
+```bash
+node dist/cli/index.js index
+```
+
+Search the indexed graph:
+
+```bash
+node dist/cli/index.js search "frontend design"
+```
+
+Resolve a task into a skill context plan:
+
+```bash
+node dist/cli/index.js resolve "make this React dashboard production-ready"
+```
+
+Expand a selected node to full skill context:
+
+```bash
+node dist/cli/index.js expand frontend-design --depth full
+```
+
+Explain the last resolution:
+
+```bash
+node dist/cli/index.js explain --last
+```
+
+During local development, the same commands can be run through `tsx`:
+
+```bash
+npm run dev -- index
+npm run dev -- resolve "make this CLI production-ready"
+```
+
+## CLI Commands
+
+- `skillgraph index`: scans skill roots and manual graph files, then writes `.skillgraph/index.json`.
+- `skillgraph search "<query>"`: ranks local graph nodes with deterministic lexical scoring.
+- `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, and explanations.
+- `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available.
+- `skillgraph explain --last`: renders the previous resolution from `.skillgraph/last-resolution.json`.
+- `skillgraph install <node-id>`: v0.1 dry-run guidance for approval-required remote installs.
+
+## Development
+
+Run the verification suite:
+
+```bash
+npm test
+npm run typecheck
+npm run build
+```
+
+The test suite covers:
+
+- `SKILL.md` parsing and normalization.
+- Local skill indexing with manual graph overlays.
+- Search ranking.
+- Resolver planning, ancestors, frontier nodes, conflicts, and token budgets.
+- Context expansion.
+- End-to-end CLI behavior over fixture skills.
 
 ## Core Documents
 

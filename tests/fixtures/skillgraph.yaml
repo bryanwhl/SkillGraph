@@ -1,0 +1,45 @@
+nodes:
+  - id: web-development
+    title: Web Development
+    kind: domain
+    description: Broad context for building web applications.
+    tags:
+      - web
+      - application
+
+  - id: frontend
+    title: Frontend
+    kind: domain
+    description: User-facing application interface work.
+    tags:
+      - frontend
+      - ui
+
+edges:
+  - from: web-development
+    to: frontend
+    type: contains
+    confidence: 1.0
+    source:
+      kind: manual
+
+  - from: frontend
+    to: frontend-design
+    type: contains
+    confidence: 1.0
+    source:
+      kind: manual
+
+  - from: frontend-design
+    to: visual-qa
+    type: complements
+    confidence: 0.9
+    source:
+      kind: manual
+
+  - from: frontend-design
+    to: typescript-advanced-types
+    type: conflicts_with
+    confidence: 0.4
+    source:
+      kind: heuristic
