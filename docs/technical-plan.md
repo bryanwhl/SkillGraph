@@ -97,6 +97,8 @@ The initial implementation should write project-local state by default:
 
 `last-resolution.json` stores the latest resolver output for `skillgraph explain --last`.
 
+`loaded-context.json` stores context layers expanded through `skillgraph expand`.
+
 `cache/` stores fetched remote metadata in later phases.
 
 ## Proposed Source Layout
@@ -447,6 +449,7 @@ Build:
 - Keep install behavior dry-run by default.
 - Support `skillgraph remote-cache "<query>"` for explicit discovery.
 - Support `skillgraph index --skills-sh-query "<query>"` to include remote candidates in local graph search and resolution.
+- Support `skillgraph install <node-id>` as graph-aware dry-run install guidance.
 
 Human-in-the-loop required:
 

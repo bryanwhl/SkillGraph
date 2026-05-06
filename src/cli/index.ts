@@ -15,8 +15,10 @@ import {
 } from "../resolver/retrieve.js";
 import { indexSkills } from "../graph/builder.js";
 import {
+  appendLoadedContext,
   loadGraph,
   loadLastResolution,
+  loadLoadedContext,
   saveGraph,
   saveLastResolution,
   saveSkillsShSearchCache,
@@ -24,6 +26,7 @@ import {
 } from "../graph/store.js";
 import { type SkillNode } from "../graph/schema.js";
 import {
+  formatLoadedContextMarkdown,
   formatIndexSummary,
   formatResolutionMarkdown,
   formatSearchMarkdown,
@@ -168,7 +171,28 @@ program
     const runtime = runtimeOptions(program.opts());
     const graph = await loadGraph(runtime.cwd);
     const expanded = await expandNode(graph, node, options.depth);
+    await appendLoadedContext(runtime.cwd, {
+      node: expanded.node,
+      depth: expanded.depth,
+      label: expanded.label,
+      tokenEstimate: expanded.tokenEstimate,
+      loadedAt: new Date().toISOString(),
+    });
     writeOutput(options.format, expanded, () => `${expanded.content}\n`);
+  });
+
+program
+  .command("context")
+  .description("Show context layers expanded in this workspace")
+  .option("--format <format>", "json or markdown", "markdown")
+  .action(async (options: { format: string }) => {
+    const runtime = runtimeOptions(program.opts());
+    const loaded = await loadLoadedContext(runtime.cwd);
+    writeOutput(
+      options.format,
+      { loaded },
+      () => formatLoadedContextMarkdown(loaded),
+    );
   });
 
 program
@@ -186,13 +210,37 @@ program
   .command("install")
   .description("Show a safe, approval-required install plan for a missing remote skill")
   .argument("<node>", "node id")
-  .action((node: string) => {
+  .action(async (nodeId: string) => {
+    const runtime = runtimeOptions(program.opts());
+    const graph = await loadGraph(runtime.cwd);
+    const node = graph.nodes.find((candidate) => candidate.id === nodeId);
+    if (!node) {
+      throw new Error(`Unknown node: ${nodeId}`);
+    }
+
+    if (node.status.installed) {
+      process.stdout.write(
+        [
+          `${node.id} is already installed locally.`,
+          node.status.localPath ? `Path: ${node.status.localPath}` : "",
+          "",
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      );
+      return;
+    }
+
+    const command = installCommandFor(node);
     process.stdout.write(
       [
-        `Remote installation for ${node} is intentionally dry-run only in v0.1.`,
-        "Review the node source and run the displayed install command manually after approval.",
+        `Remote installation for ${node.id} is dry-run only; approval required.`,
+        node.source.url ? `Source: ${node.source.url}` : "",
+        command ? `Install after approval: \`${command}\`` : "No install command is available for this node.",
         "",
-      ].join("\n"),
+      ]
+        .filter(Boolean)
+        .join("\n"),
     );
   });
 
@@ -217,6 +265,16 @@ function parseSearchProvider(value: string): SearchProviderName {
   throw new Error(
     `Expected search strategy to be one of ${SEARCH_PROVIDER_NAMES.join(", ")}, received ${value}`,
   );
+}
+
+function installCommandFor(node: SkillNode): string | undefined {
+  if (node.source.repository) {
+    return `npx skills add ${node.source.repository} --skill ${node.name}`;
+  }
+  if (node.source.url) {
+    return `npx skills add ${node.source.url} --skill ${node.name}`;
+  }
+  return undefined;
 }
 
 async function remoteNodesForQueries(

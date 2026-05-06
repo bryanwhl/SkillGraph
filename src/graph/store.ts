@@ -2,8 +2,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { slugify } from "../shared/strings.js";
 import {
+  type LoadedContextEntry,
   type Resolution,
   type SkillGraph,
+  loadedContextEntrySchema,
   resolutionSchema,
   skillGraphSchema,
 } from "./schema.js";
@@ -22,6 +24,10 @@ export function edgesPath(cwd: string): string {
 
 export function lastResolutionPath(cwd: string): string {
   return path.join(stateDirectory(cwd), "last-resolution.json");
+}
+
+export function loadedContextPath(cwd: string): string {
+  return path.join(stateDirectory(cwd), "loaded-context.json");
 }
 
 export function cacheDirectory(cwd: string): string {
@@ -64,6 +70,32 @@ export async function loadLastResolution(cwd: string): Promise<Resolution> {
   return resolutionSchema.parse(JSON.parse(raw));
 }
 
+export async function appendLoadedContext(
+  cwd: string,
+  entry: LoadedContextEntry,
+): Promise<void> {
+  await mkdir(stateDirectory(cwd), { recursive: true });
+  const loaded = await loadLoadedContext(cwd);
+  loaded.push(loadedContextEntrySchema.parse(entry));
+  await writeFile(
+    loadedContextPath(cwd),
+    `${JSON.stringify(loaded, null, 2)}\n`,
+    "utf8",
+  );
+}
+
+export async function loadLoadedContext(cwd: string): Promise<LoadedContextEntry[]> {
+  try {
+    const raw = await readFile(loadedContextPath(cwd), "utf8");
+    return zodLoadedContext(raw);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return [];
+    }
+    throw error;
+  }
+}
+
 export async function saveSkillsShSearchCache<T>(
   cwd: string,
   query: string,
@@ -72,4 +104,12 @@ export async function saveSkillsShSearchCache<T>(
   const targetPath = skillsShCachePath(cwd, query);
   await mkdir(path.dirname(targetPath), { recursive: true });
   await writeFile(targetPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+function zodLoadedContext(raw: string): LoadedContextEntry[] {
+  const parsed = JSON.parse(raw) as unknown;
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+  return parsed.map((entry) => loadedContextEntrySchema.parse(entry));
 }

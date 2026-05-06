@@ -1,4 +1,8 @@
-import { type Resolution, type SkillGraph } from "../graph/schema.js";
+import {
+  type LoadedContextEntry,
+  type Resolution,
+  type SkillGraph,
+} from "../graph/schema.js";
 import { type SkillsShSearchResult } from "../adapters/skills-sh.js";
 import { type SearchResult } from "../resolver/retrieve.js";
 
@@ -73,5 +77,22 @@ export function formatSkillsShSearchMarkdown(
           : `${result.installCount.toLocaleString("en-US")} installs`;
       return `${index + 1}. ${result.locator} (${installs})\n   ${result.url}\n   Install after approval: \`${result.installCommand}\``;
     }),
+  ].join("\n")}\n`;
+}
+
+export function formatLoadedContextMarkdown(
+  loaded: LoadedContextEntry[],
+): string {
+  if (loaded.length === 0) {
+    return "No context has been loaded yet.\n";
+  }
+
+  return `${[
+    "# SkillGraph Loaded Context",
+    "",
+    ...loaded.map(
+      (entry, index) =>
+        `${index + 1}. ${entry.node} (${entry.depth}, ${entry.tokenEstimate} tokens): ${entry.label}`,
+    ),
   ].join("\n")}\n`;
 }

@@ -84,6 +84,21 @@ describe("skillgraph CLI", () => {
     ]);
     expect(expandResult.stdout).toContain("# Frontend Design");
 
+    const contextResult = await execFileAsync(process.execPath, [
+      tsx,
+      ...commonArgs,
+      "context",
+      "--format",
+      "json",
+    ]);
+    const contextJson = JSON.parse(contextResult.stdout);
+    expect(contextJson.loaded).toContainEqual(
+      expect.objectContaining({
+        node: "frontend-design",
+        depth: "l3",
+      }),
+    );
+
     const explainResult = await execFileAsync(process.execPath, [
       tsx,
       ...commonArgs,
@@ -107,5 +122,16 @@ describe("skillgraph CLI", () => {
     ]);
     const cachedRemoteJson = JSON.parse(cachedRemoteResult.stdout);
     expect(cachedRemoteJson.results[0].name).toBe("accessibility-review");
+
+    const installResult = await execFileAsync(process.execPath, [
+      tsx,
+      ...commonArgs,
+      "install",
+      "remote-deployment",
+    ]);
+    expect(installResult.stdout).toContain(
+      "npx skills add example/deployment-skills --skill remote-deployment",
+    );
+    expect(installResult.stdout).toContain("approval required");
   });
 });

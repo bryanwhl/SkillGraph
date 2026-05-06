@@ -119,6 +119,8 @@ Responsibilities:
 
 The current resolver can use `l2` operational summaries as a middle context layer. When a selected full skill would exceed the budget, SkillGraph downgrades from `l3` to `l2` before falling back to `l1`. Local skills can also expose safe relative Markdown links as `l4` artifacts for on-demand expansion.
 
+Expanded context layers are tracked locally so an agent can report what it actually loaded instead of only what the resolver recommended.
+
 ### Installer Adapter
 
 The installer adapter wraps install mechanisms:

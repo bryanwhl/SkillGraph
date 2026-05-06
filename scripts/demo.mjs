@@ -59,6 +59,9 @@ try {
   section("Expand a linked l4 artifact");
   run([...baseArgs, "expand", "visual-qa", "--depth", "l4"]);
 
+  section("Show loaded context layers");
+  run([...baseArgs, "context"]);
+
   section("Explain the last resolution");
   run([...baseArgs, "explain", "--last"]);
 
@@ -72,6 +75,9 @@ try {
     "--budget",
     "1200",
   ]);
+
+  section("Show approval-required install plan");
+  run([...baseArgs, "install", "accessibility-review"]);
 } finally {
   rmSync(workspace, { recursive: true, force: true });
 }

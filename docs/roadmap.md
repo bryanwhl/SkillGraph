@@ -115,7 +115,7 @@ Success criteria:
 
 ## Phase 3: Progressive Context Layers
 
-Status: implemented for deterministic `l2` operational summaries, linked local `l4` artifacts, and budget-aware downgrades.
+Status: implemented for deterministic `l2` operational summaries, linked local `l4` artifacts, loaded-context tracking, and budget-aware downgrades.
 
 Goal: formalize depth-based loading.
 

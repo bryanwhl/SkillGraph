@@ -140,3 +140,12 @@ export const resolutionSchema = z.object({
 export type Resolution = z.infer<typeof resolutionSchema>;
 
 export type GraphNodeStatus = SelectedNode["status"];
+
+export const loadedContextEntrySchema = z.object({
+  node: z.string(),
+  depth: contextDepthSchema,
+  label: z.string(),
+  tokenEstimate: z.number().int().nonnegative(),
+  loadedAt: z.string(),
+});
+export type LoadedContextEntry = z.infer<typeof loadedContextEntrySchema>;

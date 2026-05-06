@@ -103,8 +103,9 @@ The demo indexes example skills, searches the graph, caches remote candidates, r
 - `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline.
 - `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
 - `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available. `summary` maps to the deterministic `l2` operational summary.
+- `skillgraph context`: shows context layers expanded in the current workspace.
 - `skillgraph explain --last`: renders the previous resolution from `.skillgraph/last-resolution.json`.
-- `skillgraph install <node-id>`: v0.1 dry-run guidance for approval-required remote installs.
+- `skillgraph install <node-id>`: graph-aware dry-run guidance with the exact approval-required remote install command when available.
 
 ## Development
 
@@ -127,6 +128,8 @@ The test suite covers:
 - Resolver planning, ancestors, frontier nodes, conflicts, and token budgets.
 - Progressive context summaries and budget downgrades.
 - Linked local artifact expansion through `l4`.
+- Loaded context tracking.
+- Approval-required install plan output.
 - Context expansion.
 - End-to-end CLI behavior over fixture skills.
 
