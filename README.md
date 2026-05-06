@@ -27,6 +27,7 @@ This repository currently contains the product definition and design documents o
 - [docs/architecture.md](./docs/architecture.md): Proposed system architecture and components.
 - [docs/runtime-protocol.md](./docs/runtime-protocol.md): How an agent should use the graph during a task.
 - [docs/graph-schema.md](./docs/graph-schema.md): Draft schema for nodes, edges, context layers, and provenance.
+- [docs/technical-plan.md](./docs/technical-plan.md): Launch-ready implementation plan, stack, hosting decision, and human-in-the-loop boundaries.
 - [docs/marketplace-strategy.md](./docs/marketplace-strategy.md): How this complements skills.sh and existing skill marketplaces.
 - [docs/roadmap.md](./docs/roadmap.md): MVP and future milestones.
 
