@@ -25,6 +25,7 @@ import {
   searchSkills,
 } from "../resolver/retrieve.js";
 import { indexSkills } from "../graph/builder.js";
+import { suggestEmbeddingEdges } from "../graph/edge-suggestions.js";
 import {
   appendLoadedContext,
   loadGraph,
@@ -41,6 +42,7 @@ import {
 import { type SkillNode } from "../graph/schema.js";
 import {
   formatLoadedContextMarkdown,
+  formatEdgeSuggestionsMarkdown,
   formatIndexSummary,
   formatResolutionMarkdown,
   formatSearchMarkdown,
@@ -53,7 +55,7 @@ const program = new Command();
 program
   .name("skillgraph")
   .description("Local-first skill graph resolver for AI agent skills")
-  .version("0.3.0")
+  .version("0.4.0")
   .option("--cwd <path>", "workspace directory")
   .option("--skill-root <path>", "skill root to index", collectOption, [])
   .option("--graph <path>", "manual skillgraph YAML file", collectOption, []);
@@ -183,6 +185,35 @@ embeddings
           `Vectors: ${index.vectors.length}`,
           "",
         ].join("\n"),
+    );
+  });
+
+const edges = program
+  .command("edges")
+  .description("Review and propose graph edges");
+
+edges
+  .command("suggest")
+  .description("Suggest review-required inferred edges from the local embedding index")
+  .option("--format <format>", "json or markdown", "markdown")
+  .option("--limit <number>", "maximum suggestion count", parseInteger, 10)
+  .option("--min-confidence <number>", "minimum inferred confidence", parseNumber, 0.35)
+  .action(async (options: {
+    format: string;
+    limit: number;
+    minConfidence: number;
+  }) => {
+    const runtime = runtimeOptions(program.opts());
+    const graph = await loadGraph(runtime.cwd);
+    const index = await loadEmbeddingIndex(runtime.cwd);
+    const suggestions = suggestEmbeddingEdges(graph, index, {
+      limit: options.limit,
+      minConfidence: options.minConfidence,
+    });
+    writeOutput(
+      options.format,
+      { suggestions },
+      () => formatEdgeSuggestionsMarkdown(suggestions),
     );
   });
 
@@ -338,6 +369,14 @@ function parseInteger(value: string): number {
   const parsed = Number.parseInt(value, 10);
   if (!Number.isFinite(parsed)) {
     throw new Error(`Expected integer, received ${value}`);
+  }
+  return parsed;
+}
+
+function parseNumber(value: string): number {
+  const parsed = Number.parseFloat(value);
+  if (!Number.isFinite(parsed)) {
+    throw new Error(`Expected number, received ${value}`);
   }
   return parsed;
 }

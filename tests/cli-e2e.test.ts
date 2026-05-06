@@ -102,6 +102,22 @@ describe("skillgraph CLI", () => {
     expect(semanticSearchJson.results[0].node.id).toBe("visual-qa");
     expect(semanticSearchJson.results[0].provider).toBe("semantic");
 
+    const edgeSuggestionResult = await execFileAsync(process.execPath, [
+      tsx,
+      ...commonArgs,
+      "edges",
+      "suggest",
+      "--format",
+      "json",
+      "--limit",
+      "2",
+      "--min-confidence",
+      "0.05",
+    ]);
+    const edgeSuggestionJson = JSON.parse(edgeSuggestionResult.stdout);
+    expect(edgeSuggestionJson.suggestions).toHaveLength(2);
+    expect(edgeSuggestionJson.suggestions[0].reviewStatus).toBe("proposed");
+
     const resolveResult = await execFileAsync(process.execPath, [
       tsx,
       ...commonArgs,

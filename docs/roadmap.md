@@ -177,6 +177,8 @@ Remaining work:
 
 ## Phase 4.5: Edge Inference
 
+Status: implemented for embedding-similarity suggestions that require human review before becoming canonical graph edges.
+
 Goal: reduce manual graph authoring.
 
 Scope:
@@ -190,6 +192,20 @@ Success criteria:
 
 - Inferred edges are useful but not silently canonical.
 - Users can inspect why an edge exists.
+
+Current implementation:
+
+- `skillgraph edges suggest` reads the saved local embedding index and proposes candidate edges.
+- Suggestions include `from`, `to`, proposed edge `type`, confidence, reason, `source.kind: inferred`, `source.method: embedding_similarity`, and `reviewStatus: proposed`.
+- Existing graph edges are skipped so suggestions focus on missing relationships.
+- Stale embedding indexes are rejected with rebuild guidance.
+- Suggestions are output only; they do not mutate `.skillgraph/index.json` or `skillgraph.yaml`.
+
+Remaining work:
+
+- Add an explicit review/apply workflow for accepted suggestions.
+- Add LLM-assisted edge typing behind human approval.
+- Store rejected suggestions so the same weak proposals are not repeated forever.
 
 ## Phase 5: Agent Runtime Skills
 

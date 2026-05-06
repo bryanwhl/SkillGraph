@@ -8,6 +8,7 @@ export {
   searchSemanticSkills,
 } from "./embeddings/indexer.js";
 export { indexSkills } from "./graph/builder.js";
+export { suggestEmbeddingEdges } from "./graph/edge-suggestions.js";
 export {
   loadEmbeddingIndex,
   loadGraph,
@@ -23,6 +24,7 @@ export type {
   EmbeddingProvider,
   EmbeddingProviderName,
 } from "./embeddings/indexer.js";
+export type { EdgeSuggestion } from "./graph/edge-suggestions.js";
 export type {
   ContextDepth,
   ContextLayer,

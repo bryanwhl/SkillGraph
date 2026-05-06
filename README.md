@@ -76,6 +76,12 @@ Search with semantic similarity after embeddings are indexed:
 node dist/cli/index.js search "visual screenshots review" --strategy semantic
 ```
 
+Suggest inferred graph edges for human review:
+
+```bash
+node dist/cli/index.js edges suggest
+```
+
 Cache remote skills.sh candidates without installing them:
 
 ```bash
@@ -119,7 +125,7 @@ Run the built-in demo:
 npm run demo
 ```
 
-The demo indexes example skills, builds deterministic demo embeddings, searches the graph with BM25, lexical, semantic, and hybrid retrieval, caches remote candidates, resolves a local frontend task, expands summary, full, and linked artifact context, explains the saved resolution, and shows the approval-required path for a remote accessibility skill.
+The demo indexes example skills, builds deterministic demo embeddings, suggests review-required inferred edges, searches the graph with BM25, lexical, semantic, and hybrid retrieval, caches remote candidates, resolves a local frontend task, expands summary, full, and linked artifact context, explains the saved resolution, and shows the approval-required path for a remote accessibility skill.
 
 ## CLI Commands
 
@@ -128,6 +134,7 @@ The demo indexes example skills, builds deterministic demo embeddings, searches 
 - `skillgraph remote-cache "<query>"`: searches skills.sh through the official Skills CLI, caches metadata under `.skillgraph/cache/`, and prints approval-required install commands.
 - `skillgraph embeddings index`: builds `.skillgraph/embeddings.json`; default provider is local Qwen3, and `--provider deterministic` is available for tests and demos.
 - `skillgraph embeddings info`: shows saved semantic index provider, model, dimensions, and vector count.
+- `skillgraph edges suggest`: proposes embedding-similarity graph edges with `reviewStatus: proposed`; it does not mutate canonical graph edges.
 - `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline, `--strategy semantic` to use the saved embedding index, or `--strategy hybrid` to fuse BM25, lexical, and semantic rankings when embeddings exist.
 - `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
 - `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available. `summary` maps to the deterministic `l2` operational summary.
@@ -152,6 +159,7 @@ The test suite covers:
 - Local skill indexing with manual graph overlays.
 - BM25 and deterministic lexical search ranking.
 - Deterministic semantic embedding indexing and search.
+- Review-required inferred edge suggestions from embedding similarity.
 - Hybrid BM25, lexical, and semantic reciprocal rank fusion.
 - skills.sh CLI output parsing and remote candidate normalization.
 - Retrieval relevance regression fixtures.

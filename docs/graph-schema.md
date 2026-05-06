@@ -78,6 +78,26 @@ review:
   reviewer: null
 ```
 
+## Edge Suggestion
+
+Inferred edges are emitted as review items before they become canonical graph metadata:
+
+```json
+{
+  "from": "frontend-design",
+  "to": "visual-qa",
+  "type": "complements",
+  "confidence": 0.72,
+  "similarity": 0.72,
+  "reason": "Embedding similarity 0.720 between normalized skill context; proposed for human review.",
+  "reviewStatus": "proposed",
+  "source": {
+    "kind": "inferred",
+    "method": "embedding_similarity"
+  }
+}
+```
+
 ## Edge Types
 
 ### `contains`

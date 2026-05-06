@@ -30,6 +30,9 @@ try {
   section("Show embedding index details");
   run([...baseArgs, "embeddings", "info"]);
 
+  section("Suggest review-required inferred edges");
+  run([...baseArgs, "edges", "suggest", "--limit", "3", "--min-confidence", "0.05"]);
+
   section("Search for frontend polish skills");
   run([...baseArgs, "search", "React frontend polish", "--limit", "4"]);
 

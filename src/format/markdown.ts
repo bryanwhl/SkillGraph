@@ -4,6 +4,7 @@ import {
   type SkillGraph,
 } from "../graph/schema.js";
 import { type SkillsShSearchResult } from "../adapters/skills-sh.js";
+import { type EdgeSuggestion } from "../graph/edge-suggestions.js";
 import { type SearchResult } from "../resolver/retrieve.js";
 
 export function formatSearchMarkdown(results: SearchResult[]): string {
@@ -58,6 +59,23 @@ export function formatResolutionMarkdown(resolution: Resolution): string {
 
 export function formatIndexSummary(graph: SkillGraph): string {
   return `Indexed ${graph.nodes.length} nodes and ${graph.edges.length} edges.\n`;
+}
+
+export function formatEdgeSuggestionsMarkdown(
+  suggestions: EdgeSuggestion[],
+): string {
+  if (suggestions.length === 0) {
+    return "No inferred edge suggestions met the confidence threshold.\n";
+  }
+
+  return `${[
+    "# SkillGraph Edge Suggestions",
+    "",
+    ...suggestions.map(
+      (suggestion, index) =>
+        `${index + 1}. ${suggestion.from} -> ${suggestion.to} (${suggestion.type}, ${suggestion.confidence.toFixed(3)}, ${suggestion.reviewStatus}): ${suggestion.reason}`,
+    ),
+  ].join("\n")}\n`;
 }
 
 export function formatSkillsShSearchMarkdown(

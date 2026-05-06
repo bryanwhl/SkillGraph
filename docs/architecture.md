@@ -65,6 +65,8 @@ Edge sources:
 - LLM-assisted classification.
 - Human-reviewed edits.
 
+The current implementation can propose embedding-similarity edges with `skillgraph edges suggest`. These suggestions include provenance and `reviewStatus: proposed`; they are not written into canonical graph files automatically.
+
 ### Local Graph Store
 
 The first version should use a simple local file store:

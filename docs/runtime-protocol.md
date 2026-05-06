@@ -142,6 +142,14 @@ skillgraph embeddings info
 
 Builds and inspects the optional local semantic index. The real provider runs locally; any future provider that uploads local task or repository text requires explicit human approval.
 
+### `edges suggest`
+
+```bash
+skillgraph edges suggest --format markdown
+```
+
+Proposes inferred graph edges from the saved local embedding index. Treat these as review items only; they are not active resolver policy unless a human accepts and records them in graph metadata.
+
 ### `expand`
 
 ```bash

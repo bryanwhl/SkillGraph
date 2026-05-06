@@ -352,6 +352,8 @@ The system must support:
 
 The system should never silently treat inferred edges as canonical. Inferred edges should carry confidence and source metadata.
 
+Current implementation: `skillgraph edges suggest` proposes embedding-similarity edges from the saved local embedding index with confidence, provenance, and `reviewStatus: proposed`. It does not mutate canonical graph edges.
+
 ### 13.3 Runtime Resolution
 
 The resolver must:

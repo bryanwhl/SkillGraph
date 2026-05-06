@@ -24,6 +24,7 @@ skillgraph index
 skillgraph search "frontend design"
 skillgraph embeddings index --provider qwen3-local
 skillgraph search "visual screenshots review" --strategy semantic
+skillgraph edges suggest
 skillgraph resolve "make this React dashboard production-ready" --format markdown
 skillgraph expand frontend-design --depth full
 skillgraph explain --last
@@ -40,6 +41,7 @@ Included:
 - Deterministic search and scoring.
 - BM25, lexical, semantic, and hybrid retrieval provider interfaces.
 - Optional local semantic embeddings.
+- Review-required inferred edge suggestions.
 - Manual and heuristic graph edges.
 - Progressive context depths.
 - JSON and Markdown output.
@@ -369,6 +371,14 @@ Candidate semantic edges must include:
 
 They should not become canonical without human review.
 
+Current implementation:
+
+- `skillgraph edges suggest` proposes review-required inferred edges from saved local embeddings.
+- Suggestions include confidence, reason, inferred source provenance, and `reviewStatus: proposed`.
+- Existing graph edges are skipped.
+- Stale embedding indexes are rejected with rebuild guidance.
+- No command applies suggestions automatically.
+
 ## Context Depths
 
 The first implementation should support:
@@ -489,6 +499,7 @@ Build:
 - `skillgraph embeddings info`.
 - `skillgraph search "<query>" --strategy semantic`.
 - Hybrid fusion that adds semantic results when embeddings exist.
+- `skillgraph edges suggest` for review-required inferred relationship proposals.
 - Deterministic embedding provider for repeatable tests and demos.
 - Local Qwen3 embedding provider for real semantic retrieval without remote uploads.
 
