@@ -1,0 +1,9 @@
+SKILLS
+
+Install with npx skills add <owner/repo@skill>
+
+example/frontend-skills@accessibility-review 1.2K installs
+-> https://skills.sh/example/frontend-skills/accessibility-review
+
+vercel-labs/agent-skills@frontend-design 108.1K installs
+-> https://skills.sh/vercel-labs/agent-skills/frontend-design

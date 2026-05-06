@@ -29,6 +29,8 @@ Use this skill when a task could benefit from specialized agent skills, especial
 ## Commands
 
 - `skillgraph index`: scan local skill roots and write `.skillgraph/index.json`.
+- `skillgraph index --skills-sh-query "<query>"`: include not-installed skills.sh candidates in the graph for the current domain.
+- `skillgraph remote-cache "<query>"`: cache skills.sh candidates and show approval-required install commands.
 - `skillgraph search "<query>"`: search the local graph with BM25 by default; use `--strategy lexical` only when comparing against the deterministic baseline.
 - `skillgraph resolve "<task>"`: return selected nodes, context depths, frontier nodes, conflicts, missing nodes, scoring provider provenance, and reasons.
 - `skillgraph expand <node-id> --depth <depth>`: load deeper context for one node.
@@ -43,3 +45,4 @@ Use this skill when a task could benefit from specialized agent skills, especial
 - Keep complements on the frontier until the task requires them.
 - Treat conflicts as warnings that need human review before loading both skills at full depth.
 - Never install remote skills without explicit user approval.
+- Treat remote-cache results as metadata only until the user approves an install.

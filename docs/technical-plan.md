@@ -137,6 +137,14 @@ src/
 
 The `skills-sh` and install modules can start as stubs or dry-run adapters until remote discovery is implemented.
 
+The current remote adapter shells out to the official Skills CLI:
+
+```bash
+npx skills find "<query>"
+```
+
+SkillGraph parses the CLI output, caches remote metadata under `.skillgraph/cache/`, converts candidates into remote graph nodes, and keeps install commands dry-run and approval-required.
+
 ## Core Data Model
 
 Minimum viable skill node:
@@ -425,10 +433,12 @@ Human decisions:
 
 Build:
 
-- Add a `skills.sh` adapter when a stable API or reliable public index is available.
+- Add a `skills.sh` adapter through the official Skills CLI while no stable JSON API is documented.
 - Represent remote candidates as `installed: false`.
 - Show source URL, install command, trust indicators, and relevance reason.
 - Keep install behavior dry-run by default.
+- Support `skillgraph remote-cache "<query>"` for explicit discovery.
+- Support `skillgraph index --skills-sh-query "<query>"` to include remote candidates in local graph search and resolution.
 
 Human-in-the-loop required:
 

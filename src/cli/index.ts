@@ -1,5 +1,11 @@
 #!/usr/bin/env node
+import { readFile } from "node:fs/promises";
 import { Command } from "commander";
+import {
+  parseSkillsShFindOutput,
+  searchSkillsSh,
+  skillsShResultToNode,
+} from "../adapters/skills-sh.js";
 import { expandNode, type ExpandDepth } from "../resolver/expand.js";
 import { explainResolution, resolveTask } from "../resolver/plan.js";
 import {
@@ -13,11 +19,15 @@ import {
   loadLastResolution,
   saveGraph,
   saveLastResolution,
+  saveSkillsShSearchCache,
+  skillsShCachePath,
 } from "../graph/store.js";
+import { type SkillNode } from "../graph/schema.js";
 import {
   formatIndexSummary,
   formatResolutionMarkdown,
   formatSearchMarkdown,
+  formatSkillsShSearchMarkdown,
 } from "../format/markdown.js";
 import { collectOption, runtimeOptions } from "./options.js";
 
@@ -35,14 +45,62 @@ program
   .command("index")
   .description("Index local skills and manual graph files")
   .option("--format <format>", "json or markdown", "markdown")
-  .action(async (options: { format: string }) => {
+  .option("--skills-sh-query <query>", "skills.sh query to cache as remote candidates", collectOption, [])
+  .option("--remote-limit <number>", "remote candidate count per skills.sh query", parseInteger, 5)
+  .action(async (options: {
+    format: string;
+    skillsShQuery: string[];
+    remoteLimit: number;
+  }) => {
     const runtime = runtimeOptions(program.opts());
-    const graph = await indexSkills(runtime);
+    const indexedAt = new Date().toISOString();
+    const remoteNodes = await remoteNodesForQueries(
+      runtime.cwd,
+      options.skillsShQuery,
+      options.remoteLimit,
+      indexedAt,
+    );
+    const graph = await indexSkills({
+      ...runtime,
+      remoteNodes,
+      now: indexedAt,
+    });
     await saveGraph(runtime.cwd, graph);
     writeOutput(
       options.format,
       graph,
       () => formatIndexSummary(graph),
+    );
+  });
+
+program
+  .command("remote-cache")
+  .description("Search skills.sh through the Skills CLI and cache remote candidates")
+  .argument("<query>", "skills.sh search query")
+  .option("--format <format>", "json or markdown", "markdown")
+  .option("--limit <number>", "maximum remote result count", parseInteger, 10)
+  .option("--fixture <path>", "parse a saved Skills CLI output fixture instead of running npx")
+  .action(async (
+    query: string,
+    options: { format: string; limit: number; fixture?: string },
+  ) => {
+    const runtime = runtimeOptions(program.opts());
+    const results = options.fixture
+      ? parseSkillsShFindOutput(await readFile(options.fixture, "utf8")).slice(0, options.limit)
+      : await searchSkillsSh(query, { limit: options.limit });
+    await saveSkillsShSearchCache(runtime.cwd, query, {
+      query,
+      results,
+      cachedAt: new Date().toISOString(),
+    });
+    writeOutput(
+      options.format,
+      {
+        query,
+        cachePath: skillsShCachePath(runtime.cwd, query),
+        results,
+      },
+      () => formatSkillsShSearchMarkdown(results),
     );
   });
 
@@ -159,6 +217,34 @@ function parseSearchProvider(value: string): SearchProviderName {
   throw new Error(
     `Expected search strategy to be one of ${SEARCH_PROVIDER_NAMES.join(", ")}, received ${value}`,
   );
+}
+
+async function remoteNodesForQueries(
+  cwd: string,
+  queries: string[],
+  limit: number,
+  indexedAt: string,
+): Promise<SkillNode[]> {
+  const nodes: SkillNode[] = [];
+
+  for (const query of queries) {
+    const results = await searchSkillsSh(query, { limit });
+    await saveSkillsShSearchCache(cwd, query, {
+      query,
+      results,
+      cachedAt: indexedAt,
+    });
+    nodes.push(
+      ...results.map((result) =>
+        skillsShResultToNode(result, {
+          indexedAt,
+          query,
+        }),
+      ),
+    );
+  }
+
+  return nodes;
 }
 
 function writeOutput<T>(

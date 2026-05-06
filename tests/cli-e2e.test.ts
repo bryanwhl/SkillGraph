@@ -92,5 +92,20 @@ describe("skillgraph CLI", () => {
     ]);
     expect(explainResult.stdout).toContain("## Selected");
     expect(explainResult.stdout).toContain("frontend-design");
+
+    const cachedRemoteResult = await execFileAsync(process.execPath, [
+      tsx,
+      cli,
+      "--cwd",
+      cwd,
+      "remote-cache",
+      "accessibility keyboard",
+      "--fixture",
+      fixturePath("skills-sh-find-output.txt"),
+      "--format",
+      "json",
+    ]);
+    const cachedRemoteJson = JSON.parse(cachedRemoteResult.stdout);
+    expect(cachedRemoteJson.results[0].name).toBe("accessibility-review");
   });
 });

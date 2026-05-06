@@ -50,6 +50,18 @@ Compare against the deterministic lexical baseline:
 node dist/cli/index.js search "frontend design" --strategy lexical
 ```
 
+Cache remote skills.sh candidates without installing them:
+
+```bash
+node dist/cli/index.js remote-cache "accessibility keyboard"
+```
+
+Index local skills plus remote candidates from skills.sh:
+
+```bash
+node dist/cli/index.js index --skills-sh-query "accessibility keyboard"
+```
+
 Resolve a task into a skill context plan:
 
 ```bash
@@ -86,6 +98,8 @@ The demo indexes example skills, searches the graph, resolves a local frontend t
 ## CLI Commands
 
 - `skillgraph index`: scans skill roots and manual graph files, then writes `.skillgraph/index.json`.
+- `skillgraph index --skills-sh-query "<query>"`: includes cached, not-installed skills.sh candidates as remote graph nodes.
+- `skillgraph remote-cache "<query>"`: searches skills.sh through the official Skills CLI, caches metadata under `.skillgraph/cache/`, and prints approval-required install commands.
 - `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline.
 - `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
 - `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available.
@@ -108,6 +122,7 @@ The test suite covers:
 - `SKILL.md` parsing and normalization.
 - Local skill indexing with manual graph overlays.
 - BM25 and deterministic lexical search ranking.
+- skills.sh CLI output parsing and remote candidate normalization.
 - Retrieval relevance regression fixtures.
 - Resolver planning, ancestors, frontier nodes, conflicts, and token budgets.
 - Context expansion.

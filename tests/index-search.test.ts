@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { skillsShResultToNode } from "../src/adapters/skills-sh.js";
 import { indexSkills } from "../src/graph/builder.js";
 import { searchSkills } from "../src/resolver/retrieve.js";
 import { fixturePath } from "./support/paths.js";
@@ -21,6 +22,40 @@ describe("indexSkills and searchSkills", () => {
       "web-development",
     ]);
     expect(graph.edges).toHaveLength(4);
+  });
+
+  it("merges remote skills.sh candidates into the graph index", async () => {
+    const remoteNode = skillsShResultToNode(
+      {
+        id: "accessibility-review",
+        name: "accessibility-review",
+        repository: "example/frontend-skills",
+        locator: "example/frontend-skills@accessibility-review",
+        url: "https://skills.sh/example/frontend-skills/accessibility-review",
+        installCount: 1200,
+        installCommand:
+          "npx skills add example/frontend-skills --skill accessibility-review",
+      },
+      {
+        indexedAt: "2026-05-06T00:00:00.000Z",
+        query: "accessibility keyboard",
+      },
+    );
+
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      remoteNodes: [remoteNode],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const results = searchSkills(graph, "accessibility keyboard", {
+      provider: "bm25",
+    });
+
+    expect(results[0]?.node.id).toBe("accessibility-review");
+    expect(results[0]?.node.status.installed).toBe(false);
   });
 
   it("ranks direct lexical matches ahead of adjacent skills", async () => {

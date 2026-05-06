@@ -30,6 +30,17 @@ try {
   section("Compare the lexical baseline");
   run([...baseArgs, "search", "React frontend polish", "--strategy", "lexical", "--limit", "4"]);
 
+  section("Cache remote skills.sh candidates");
+  run([
+    cli,
+    "--cwd",
+    workspace,
+    "remote-cache",
+    "accessibility keyboard",
+    "--fixture",
+    path.join(demoRoot, "skills-sh-find-output.txt"),
+  ]);
+
   section("Resolve a local frontend task");
   run([
     ...baseArgs,

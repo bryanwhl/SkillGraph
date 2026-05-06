@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { slugify } from "../shared/strings.js";
 import {
   type Resolution,
   type SkillGraph,
@@ -21,6 +22,18 @@ export function edgesPath(cwd: string): string {
 
 export function lastResolutionPath(cwd: string): string {
   return path.join(stateDirectory(cwd), "last-resolution.json");
+}
+
+export function cacheDirectory(cwd: string): string {
+  return path.join(stateDirectory(cwd), "cache");
+}
+
+export function skillsShCachePath(cwd: string, query: string): string {
+  return path.join(
+    cacheDirectory(cwd),
+    "skills-sh",
+    `${slugify(query) || "all"}.json`,
+  );
 }
 
 export async function saveGraph(cwd: string, graph: SkillGraph): Promise<void> {
@@ -49,4 +62,14 @@ export async function saveLastResolution(
 export async function loadLastResolution(cwd: string): Promise<Resolution> {
   const raw = await readFile(lastResolutionPath(cwd), "utf8");
   return resolutionSchema.parse(JSON.parse(raw));
+}
+
+export async function saveSkillsShSearchCache<T>(
+  cwd: string,
+  query: string,
+  value: T,
+): Promise<void> {
+  const targetPath = skillsShCachePath(cwd, query);
+  await mkdir(path.dirname(targetPath), { recursive: true });
+  await writeFile(targetPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }

@@ -386,6 +386,8 @@ The system must:
 - Record installed skill provenance.
 - Read installed skill files immediately for current-turn use.
 
+Current implementation: remote discovery is dry-run only. `remote-cache` and `index --skills-sh-query` cache skills.sh metadata and expose install commands, but they do not execute installs.
+
 ### 13.5 Progressive Disclosure
 
 The system must:

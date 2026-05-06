@@ -17,6 +17,7 @@ export type IndexSkillsOptions = {
   cwd: string;
   skillRoots: string[];
   graphFiles?: string[];
+  remoteNodes?: SkillNode[];
   now?: string;
 };
 
@@ -66,6 +67,10 @@ export async function indexSkills(options: IndexSkillsOptions): Promise<SkillGra
   );
   const manual = await readManualGraphs(options.graphFiles ?? [], indexedAt);
   const nodesById = new Map<string, SkillNode>();
+
+  for (const node of options.remoteNodes ?? []) {
+    nodesById.set(node.id, node);
+  }
 
   for (const node of manual.nodes) {
     nodesById.set(node.id, node);

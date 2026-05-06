@@ -71,12 +71,14 @@ Success criteria:
 
 ## Phase 2: skills.sh Adapter
 
+Status: partially implemented for dry-run discovery and cacheable remote metadata.
+
 Goal: connect remote discovery to runtime graph resolution.
 
 Scope:
 
-- Search skills.sh.
-- Fetch skill metadata.
+- Search skills.sh through the official Skills CLI.
+- Fetch and cache skill metadata exposed by `skills find` output.
 - Link install commands.
 - Mark local vs remote skills.
 - Ask before installation.
@@ -84,9 +86,15 @@ Scope:
 
 Success criteria:
 
-- Resolver can propose remote skills with clear trust metadata.
+- Resolver can propose cached remote skills with clear source metadata.
 - User can approve install.
 - Agent can use the new skill in the same turn.
+
+Remaining work:
+
+- Read newly installed `SKILL.md` files immediately after approved install.
+- Enrich remote metadata when skills.sh exposes a stable structured API.
+- Add source reputation and trust signals beyond install count and repository locator.
 
 ## Phase 2.5: Unified Local and Remote Retrieval
 

@@ -1,4 +1,5 @@
 import { type Resolution, type SkillGraph } from "../graph/schema.js";
+import { type SkillsShSearchResult } from "../adapters/skills-sh.js";
 import { type SearchResult } from "../resolver/retrieve.js";
 
 export function formatSearchMarkdown(results: SearchResult[]): string {
@@ -53,4 +54,24 @@ export function formatResolutionMarkdown(resolution: Resolution): string {
 
 export function formatIndexSummary(graph: SkillGraph): string {
   return `Indexed ${graph.nodes.length} nodes and ${graph.edges.length} edges.\n`;
+}
+
+export function formatSkillsShSearchMarkdown(
+  results: SkillsShSearchResult[],
+): string {
+  if (results.length === 0) {
+    return "No remote skills found.\n";
+  }
+
+  return `${[
+    "# SkillGraph Remote Cache",
+    "",
+    ...results.map((result, index) => {
+      const installs =
+        result.installCount === undefined
+          ? "install count unavailable"
+          : `${result.installCount.toLocaleString("en-US")} installs`;
+      return `${index + 1}. ${result.locator} (${installs})\n   ${result.url}\n   Install after approval: \`${result.installCommand}\``;
+    }),
+  ].join("\n")}\n`;
 }

@@ -85,7 +85,7 @@ Planned providers:
 
 - Deterministic lexical provider for the v0.1 baseline.
 - BM25 provider for local lexical ranking, backed by MiniSearch.
-- Remote metadata provider for cached skills.sh candidates.
+- Remote metadata provider for cached skills.sh candidates from the official Skills CLI.
 - Optional semantic provider for embedding similarity.
 - Hybrid provider that fuses BM25, semantic, and graph-aware signals.
 
@@ -100,6 +100,8 @@ The provider output should include:
 Semantic providers must be optional. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
 
 The current implementation ships the deterministic lexical and BM25 providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons.
+
+Remote discovery is implemented as a dry-run adapter over `npx skills find`. It parses remote candidates, caches them, and can include them as `installed: false` graph nodes, but it does not install or execute remote skill content.
 
 ### Runtime Resolver
 
