@@ -43,6 +43,39 @@ describe("resolveTask and expandNode", () => {
     expect(resolution.budget.estimatedTokens).toBeLessThanOrEqual(1600);
   });
 
+  it("marks selected remote skills as missing and approval-required", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const resolution = resolveTask(graph, {
+      task: "Deploy this application to production",
+      agent: "codex",
+      budgetTokens: 1600,
+    });
+
+    expect(resolution.selected).toContainEqual(
+      expect.objectContaining({
+        node: "remote-deployment",
+        status: "remote",
+      }),
+    );
+    expect(resolution.missing).toEqual([
+      expect.objectContaining({
+        node: "remote-deployment",
+        requiresUserApproval: true,
+        installCommand:
+          "npx skills add example/deployment-skills --skill remote-deployment",
+      }),
+    ]);
+    expect(explainResolution(resolution)).toContain(
+      "npx skills add example/deployment-skills --skill remote-deployment",
+    );
+  });
+
   it("expands shallow and full context for an installed skill", async () => {
     const graph = await indexSkills({
       cwd: fixturePath(),

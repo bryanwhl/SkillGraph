@@ -142,7 +142,10 @@ export function explainResolution(resolution: Resolution): string {
     "",
     "## Missing",
     ...(resolution.missing.length > 0
-      ? resolution.missing.map((item) => `- ${item.node}: ${item.reason}`)
+      ? resolution.missing.map((item) => {
+          const command = item.installCommand ? ` Install: \`${item.installCommand}\`.` : "";
+          return `- ${item.node}: ${item.reason}${command}`;
+        })
       : ["- None"]),
   ];
 

@@ -15,6 +15,7 @@ describe("indexSkills and searchSkills", () => {
     expect(graph.nodes.map((node) => node.id).sort()).toEqual([
       "frontend",
       "frontend-design",
+      "remote-deployment",
       "typescript-advanced-types",
       "visual-qa",
       "web-development",
@@ -35,5 +36,45 @@ describe("indexSkills and searchSkills", () => {
     expect(results[0]?.node.id).toBe("frontend-design");
     expect(results[0]?.score).toBeGreaterThan(results[1]?.score ?? 0);
     expect(results[0]?.reason).toContain("frontend");
+  });
+
+  it("does not return installed skills that have no lexical match", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const results = searchSkills(graph, "postgres database migration");
+
+    expect(results).toEqual([]);
+  });
+
+  it("ignores stop words when scoring matches", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const results = searchSkills(graph, "the and for with");
+
+    expect(results).toEqual([]);
+  });
+
+  it("normalizes common suffixes and hyphenated terms for task wording", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const results = searchSkills(graph, "production-ready polished dashboard");
+
+    expect(results[0]?.node.id).toBe("frontend-design");
+    expect(results[0]?.reason).toContain("polish");
   });
 });

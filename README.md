@@ -69,6 +69,14 @@ npm run dev -- index
 npm run dev -- resolve "make this CLI production-ready"
 ```
 
+Run the built-in demo:
+
+```bash
+npm run demo
+```
+
+The demo indexes example skills, searches the graph, resolves a local frontend task, expands a full skill, explains the saved resolution, and shows the approval-required path for a remote accessibility skill.
+
 ## CLI Commands
 
 - `skillgraph index`: scans skill roots and manual graph files, then writes `.skillgraph/index.json`.
@@ -86,6 +94,7 @@ Run the verification suite:
 npm test
 npm run typecheck
 npm run build
+npm run demo
 ```
 
 The test suite covers:

@@ -5,27 +5,28 @@ nodes:
     description: Broad context for building web applications.
     tags:
       - web
-      - application
+      - app
 
   - id: frontend
     title: Frontend
     kind: domain
-    description: User-facing application interface work.
+    description: User-facing interface work across layout, interaction, state, and accessibility.
     tags:
       - frontend
       - ui
 
-  - id: remote-deployment
-    title: Remote Deployment
+  - id: accessibility-review
+    title: Accessibility Review
     kind: workflow
-    description: Deploy applications to hosted production platforms.
+    description: Review keyboard access, semantic structure, contrast, focus states, and screen reader affordances.
     source:
       type: skills_sh
-      url: https://skills.sh/example/deployment
-      repository: example/deployment-skills
+      url: https://skills.sh/example/accessibility-review
+      repository: example/frontend-skills
     tags:
-      - deployment
-      - production
+      - accessibility
+      - a11y
+      - frontend
 
 edges:
   - from: web-development
@@ -42,6 +43,13 @@ edges:
     source:
       kind: manual
 
+  - from: frontend
+    to: react-best-practices
+    type: contains
+    confidence: 0.9
+    source:
+      kind: manual
+
   - from: frontend-design
     to: visual-qa
     type: complements
@@ -50,8 +58,8 @@ edges:
       kind: manual
 
   - from: frontend-design
-    to: typescript-advanced-types
-    type: conflicts_with
-    confidence: 0.4
+    to: accessibility-review
+    type: complements
+    confidence: 0.8
     source:
-      kind: heuristic
+      kind: manual

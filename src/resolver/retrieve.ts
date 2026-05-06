@@ -56,7 +56,7 @@ function scoreNode(node: SkillNode, queryTerms: string[]): SearchResult {
     }
   }
 
-  if (node.status.installed) {
+  if (matched.size > 0 && node.status.installed) {
     score += 1;
   }
 
@@ -71,5 +71,5 @@ function scoreNode(node: SkillNode, queryTerms: string[]): SearchResult {
 }
 
 function matches(values: string[], term: string): boolean {
-  return values.some((value) => value === term || value.includes(term) || term.includes(value));
+  return values.some((value) => value === term || value.includes(term));
 }

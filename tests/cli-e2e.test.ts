@@ -33,7 +33,7 @@ describe("skillgraph CLI", () => {
     ];
 
     const indexResult = await execFileAsync(process.execPath, [tsx, ...commonArgs, "index"]);
-    expect(indexResult.stdout).toContain("Indexed 5 nodes");
+    expect(indexResult.stdout).toContain("Indexed 6 nodes");
 
     const searchResult = await execFileAsync(process.execPath, [
       tsx,
