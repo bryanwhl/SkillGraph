@@ -31,6 +31,20 @@ This repository currently contains the product definition and design documents o
 - [docs/marketplace-strategy.md](./docs/marketplace-strategy.md): How this complements skills.sh and existing skill marketplaces.
 - [docs/roadmap.md](./docs/roadmap.md): MVP and future milestones.
 
+## Project Skills
+
+This repository vendors project-level agent skills under [.agents/skills](./.agents/skills) so future agent sessions can use the same build-support workflows while developing SkillGraph Resolver.
+
+Current project skills:
+
+- `find-skills`
+- `test-driven-development`
+- `verification-before-completion`
+- `typescript-advanced-types`
+- `nodejs-backend-patterns`
+
+The selected skill sources and hashes are tracked in [skills-lock.json](./skills-lock.json).
+
 ## Product Thesis
 
 Agent skills should behave less like a flat plugin list and more like a contextual knowledge graph. A skill graph can help an agent answer questions such as:
