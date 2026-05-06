@@ -131,6 +131,17 @@ skillgraph resolve "<task>" \
 
 Returns a ranked context plan.
 
+Use `--strategy hybrid` when a local embedding index exists and the task benefits from both exact lexical matching and conceptual matching. Use `--strategy semantic` only after `skillgraph embeddings index` has been run.
+
+### `embeddings`
+
+```bash
+skillgraph embeddings index --provider qwen3-local
+skillgraph embeddings info
+```
+
+Builds and inspects the optional local semantic index. The real provider runs locally; any future provider that uploads local task or repository text requires explicit human approval.
+
 ### `expand`
 
 ```bash

@@ -139,7 +139,7 @@ Remaining work:
 
 ## Phase 4: Semantic and Hybrid Retrieval
 
-Status: partially implemented for BM25 plus lexical hybrid fusion. Semantic embeddings remain gated on provider and privacy decisions.
+Status: implemented for local optional semantic embeddings, deterministic semantic tests, Qwen3-local provider wiring, and BM25 plus lexical plus semantic hybrid fusion. Remote embedding providers remain gated on privacy and approval decisions.
 
 Goal: add semantic matching without losing deterministic, explainable behavior.
 
@@ -158,6 +158,22 @@ Success criteria:
 - Exact lexical matches remain strong when they are clearly relevant.
 - Hybrid rankings are covered by relevance tests and explain how each candidate was retrieved.
 - Semantic search can be disabled for local-only or privacy-sensitive workflows.
+
+Current implementation:
+
+- `skillgraph embeddings index` builds `.skillgraph/embeddings.json`.
+- `qwen3-local` is the default real local embedding provider and uses `Qwen/Qwen3-Embedding-0.6B` through `sentence-transformers`.
+- `deterministic` is a test and demo provider that avoids model downloads.
+- `skillgraph search --strategy semantic` ranks saved vectors by cosine similarity.
+- `skillgraph search --strategy hybrid` fuses BM25, lexical, and semantic results when embeddings exist.
+- Saved embeddings are checked against current normalized node text; direct semantic search asks for a rebuild when stale, while hybrid skips stale semantic results.
+- No remote embedding upload path is implemented.
+
+Remaining work:
+
+- Add model installation documentation and hardware notes after dogfooding on common developer machines.
+- Add semantic relevance fixtures that demonstrate conceptual matches BM25 misses.
+- Evaluate smaller and larger embedding model choices against SkillGraph-specific relevance fixtures.
 
 ## Phase 4.5: Edge Inference
 

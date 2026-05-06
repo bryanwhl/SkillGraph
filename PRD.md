@@ -376,7 +376,7 @@ Semantic retrieval must be optional and must respect the privacy requirements in
 
 Current implementation: BM25 is the default local retrieval strategy for `search` and `resolve`, with deterministic lexical retrieval still available as a baseline strategy.
 
-Current implementation also supports hybrid BM25 plus lexical retrieval through reciprocal rank fusion. Semantic embeddings are not enabled by default.
+Current implementation also supports optional local semantic embeddings. `skillgraph embeddings index` writes `.skillgraph/embeddings.json`, `skillgraph search --strategy semantic` ranks saved vectors by cosine similarity, and `--strategy hybrid` fuses BM25, lexical, and semantic results when embeddings exist. The default real provider is local Qwen3 through Python and `sentence-transformers`; deterministic embeddings are available for tests and demos. Remote embedding uploads are not implemented.
 
 ### 13.4 Installation
 
@@ -498,7 +498,7 @@ Given a task:
 6. Assign context depth under budget.
 7. Return a frontier for future expansion.
 
-The first implementation should retrieve candidates with deterministic lexical scoring. Later versions should add BM25, then optional semantic embeddings, then hybrid fusion. Embedding the task should only happen when semantic retrieval is enabled and the user has approved any provider that uploads task or repository context.
+The first implementation started with deterministic lexical scoring. Current retrieval defaults to BM25, supports optional local semantic embeddings, and can fuse BM25, lexical, and semantic rankings. Embedding the task should only happen when semantic retrieval is enabled; any provider that uploads task or repository context requires explicit user approval.
 
 Draft scoring:
 

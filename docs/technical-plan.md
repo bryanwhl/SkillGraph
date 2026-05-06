@@ -14,6 +14,7 @@ Build `skillgraph` as a local command-line tool that can:
 - Return selected skill nodes, context depths, frontier nodes, conflicts, missing skills, and explanations.
 - Expand a selected node to deeper context, including full `SKILL.md` content.
 - Save the last resolution for explainability.
+- Optionally build and search a local semantic embedding index.
 - Provide a companion agent skill that teaches Codex, Claude Code, or similar runtimes how to use the CLI during a task.
 
 The first useful launch should make this flow work:
@@ -21,6 +22,8 @@ The first useful launch should make this flow work:
 ```bash
 skillgraph index
 skillgraph search "frontend design"
+skillgraph embeddings index --provider qwen3-local
+skillgraph search "visual screenshots review" --strategy semantic
 skillgraph resolve "make this React dashboard production-ready" --format markdown
 skillgraph expand frontend-design --depth full
 skillgraph explain --last
@@ -35,6 +38,8 @@ Included:
 - Local skill indexing.
 - Local graph store.
 - Deterministic search and scoring.
+- BM25, lexical, semantic, and hybrid retrieval provider interfaces.
+- Optional local semantic embeddings.
 - Manual and heuristic graph edges.
 - Progressive context depths.
 - JSON and Markdown output.
@@ -51,6 +56,7 @@ Not included:
 - Automatic remote installs.
 - LLM-generated canonical edges.
 - Full semantic codebase analysis.
+- Remote embedding uploads without explicit approval.
 
 ## Recommended Technology Stack
 
@@ -88,6 +94,8 @@ The initial implementation should write project-local state by default:
   index.json
   edges.json
   last-resolution.json
+  embeddings.json
+  loaded-context.json
   cache/
 ```
 
@@ -98,6 +106,8 @@ The initial implementation should write project-local state by default:
 `last-resolution.json` stores the latest resolver output for `skillgraph explain --last`.
 
 `loaded-context.json` stores context layers expanded through `skillgraph expand`.
+
+`embeddings.json` stores optional local semantic vectors with provider, model, dimensions, timestamps, graph timestamp, source hashes, and vector metadata.
 
 `cache/` stores fetched remote metadata in later phases.
 
@@ -302,6 +312,8 @@ The resolver should be able to rank:
 
 ### v0.4: Optional Semantic Retrieval
 
+Current implementation status: implemented for local skill embeddings.
+
 Add embeddings after BM25 is useful and measurable.
 
 Embed:
@@ -321,11 +333,20 @@ Store vectors locally with enough metadata to know when they are stale:
 
 Human-in-the-loop approval is required before enabling any provider that uploads local task text, repository context, or private skill content.
 
+Implementation notes:
+
+- `skillgraph embeddings index` writes `.skillgraph/embeddings.json`.
+- The default real provider is `qwen3-local`, which runs a local Python helper using `sentence-transformers` and `Qwen/Qwen3-Embedding-0.6B`.
+- `--provider deterministic` is available for tests and demos only.
+- `skillgraph search "<query>" --strategy semantic` embeds the query locally and ranks by cosine similarity against saved vectors.
+- Semantic search is disabled until a local embedding index exists.
+- Saved embeddings are checked against current normalized node text; direct semantic search asks for a rebuild when stale, while hybrid skips stale semantic results.
+
 ### v0.5: Hybrid Retrieval
 
 Combine BM25 and semantic results using a stable fusion strategy, such as reciprocal rank fusion.
 
-Current implementation supports reciprocal rank fusion over BM25 and deterministic lexical retrieval via `--strategy hybrid`. Semantic results can join the same fusion path after an embedding provider is approved.
+Current implementation supports reciprocal rank fusion over BM25 and deterministic lexical retrieval via `--strategy hybrid`. Semantic results automatically join the same fusion path after an embedding index exists.
 
 The hybrid retriever should:
 
@@ -459,6 +480,25 @@ Human-in-the-loop required:
 - Trust decisions for remote sources.
 - Confirmation before executing install commands.
 
+### Slice 7: Local Semantic Retrieval
+
+Build:
+
+- `skillgraph embeddings index`.
+- `.skillgraph/embeddings.json` with provider, model, dimensions, timestamps, graph timestamp, source hashes, and vectors.
+- `skillgraph embeddings info`.
+- `skillgraph search "<query>" --strategy semantic`.
+- Hybrid fusion that adds semantic results when embeddings exist.
+- Deterministic embedding provider for repeatable tests and demos.
+- Local Qwen3 embedding provider for real semantic retrieval without remote uploads.
+
+Human-in-the-loop required:
+
+- Installing Python embedding dependencies.
+- Downloading and storing local model weights.
+- Deciding whether local hardware is sufficient for the selected model.
+- Approving any future remote embedding provider before local/private text is uploaded.
+
 ## Hosting Decision
 
 Hosting is not needed for the first launch.
@@ -495,6 +535,7 @@ A coding agent can autonomously implement:
 - Documentation.
 - The first agent skill.
 - Dry-run remote install display.
+- Local semantic embedding indexing and deterministic semantic test providers.
 
 ## Human-In-The-Loop Work
 
@@ -509,6 +550,8 @@ Human approval or review is required for:
 - Validating recommendation quality.
 - Publishing npm packages or GitHub releases.
 - Enabling any feature that uploads local repository or task context.
+- Installing Python embedding dependencies and downloading local model weights.
+- Deciding whether a local machine has enough disk, memory, and CPU/GPU capacity for the selected embedding model.
 
 ## Launch Criteria
 

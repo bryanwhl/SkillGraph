@@ -69,9 +69,12 @@ Edge sources:
 
 The first version should use a simple local file store:
 
-- `skillgraph.lock.json` for indexed nodes and sources.
-- `skillgraph.edges.json` for edges.
-- `skillgraph.cache/` for fetched remote metadata.
+- `.skillgraph/index.json` for indexed nodes and sources.
+- `.skillgraph/edges.json` for edges.
+- `.skillgraph/last-resolution.json` for explainability.
+- `.skillgraph/loaded-context.json` for expanded context tracking.
+- `.skillgraph/embeddings.json` for optional local semantic vectors.
+- `.skillgraph/cache/` for fetched remote metadata.
 
 A future version could use SQLite for better search, caching, and migrations.
 
@@ -97,9 +100,13 @@ The provider output should include:
 - retrieval source, such as lexical, BM25, semantic, remote, or graph expansion;
 - explanation metadata for resolver output.
 
-Semantic providers must be optional. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
+Semantic providers must be optional. Local semantic search uses a saved `.skillgraph/embeddings.json` file and embeds only normalized skill text plus the current query. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
 
-The current implementation ships the deterministic lexical, BM25, and hybrid providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons, and `--strategy hybrid` fuses BM25 plus lexical rankings with reciprocal rank fusion.
+The current implementation ships deterministic lexical, BM25, semantic, and hybrid providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons. Semantic search is enabled only after `skillgraph embeddings index` writes a local vector index. Hybrid retrieval fuses BM25 and lexical rankings by default and adds semantic rankings automatically when embeddings exist.
+
+The default real semantic provider is `qwen3-local`, which shells out to a local Python helper using `sentence-transformers` and `Qwen/Qwen3-Embedding-0.6B`. The deterministic embedding provider exists for tests and demos so CI and local verification do not need model weights.
+
+The semantic index is rebuildable derived state. SkillGraph checks saved vector hashes against current normalized node text before using semantic results.
 
 Remote discovery is implemented as a dry-run adapter over `npx skills find`. It parses remote candidates, caches them, and can include them as `installed: false` graph nodes, but it does not install or execute remote skill content.
 

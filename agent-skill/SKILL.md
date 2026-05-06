@@ -37,8 +37,10 @@ Use this skill when a task could benefit from specialized agent skills, especial
 - `skillgraph index`: scan local skill roots and write `.skillgraph/index.json`.
 - `skillgraph index --skills-sh-query "<query>"`: include not-installed skills.sh candidates in the graph for the current domain.
 - `skillgraph remote-cache "<query>"`: cache skills.sh candidates and show approval-required install commands.
-- `skillgraph search "<query>"`: search the local graph with BM25 by default; use `--strategy lexical` for baseline comparison or `--strategy hybrid` for BM25 plus lexical fusion.
-- `skillgraph resolve "<task>"`: return selected nodes, context depths, frontier nodes, conflicts, missing nodes, scoring provider provenance, and reasons.
+- `skillgraph embeddings index`: build a local semantic embedding index. Use the default `qwen3-local` provider only when local Python dependencies and model storage are acceptable; use `--provider deterministic` for tests and demos.
+- `skillgraph embeddings info`: show the saved local embedding provider, model, dimensions, and vector count.
+- `skillgraph search "<query>"`: search the local graph with BM25 by default; use `--strategy lexical` for baseline comparison, `--strategy semantic` after embeddings exist, or `--strategy hybrid` for BM25 plus lexical plus semantic fusion.
+- `skillgraph resolve "<task>"`: return selected nodes, context depths, frontier nodes, conflicts, missing nodes, scoring provider provenance, and reasons. Hybrid resolution includes semantic results only when a local embedding index already exists.
 - `skillgraph expand <node-id> --depth <depth>`: load deeper context for one node.
 - `skillgraph context`: show context layers loaded in the current workspace.
 - `skillgraph explain --last`: explain the last resolution path.
@@ -53,3 +55,4 @@ Use this skill when a task could benefit from specialized agent skills, especial
 - Treat conflicts as warnings that need human review before loading both skills at full depth.
 - Never install remote skills without explicit user approval.
 - Treat remote-cache results as metadata only until the user approves an install.
+- Do not enable any embedding provider that uploads local task, repository, or private skill text without explicit human approval.

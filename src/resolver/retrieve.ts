@@ -4,7 +4,7 @@ import MiniSearch, {
 import { type SkillGraph, type SkillNode } from "../graph/schema.js";
 import { tokenize, unique } from "../shared/strings.js";
 
-export const SEARCH_PROVIDER_NAMES = ["bm25", "lexical", "hybrid"] as const;
+export const SEARCH_PROVIDER_NAMES = ["bm25", "lexical", "semantic", "hybrid"] as const;
 export type SearchProviderName = (typeof SEARCH_PROVIDER_NAMES)[number];
 
 export type SearchSkillsOptions = {
@@ -59,6 +59,9 @@ function normalizeSearchOptions(
 function providerFor(provider: SearchProviderName): SearchProvider {
   if (provider === "lexical") {
     return lexicalSearchProvider;
+  }
+  if (provider === "semantic") {
+    return semanticSearchProvider;
   }
   if (provider === "hybrid") {
     return hybridSearchProvider;
@@ -119,6 +122,15 @@ const bm25SearchProvider: SearchProvider = {
   },
 };
 
+const semanticSearchProvider: SearchProvider = {
+  name: "semantic",
+  search() {
+    throw new Error(
+      "Semantic search requires a saved embedding index. Run `skillgraph embeddings index` first.",
+    );
+  },
+};
+
 const hybridSearchProvider: SearchProvider = {
   name: "hybrid",
   search(graph, query, limit) {
@@ -127,51 +139,58 @@ const hybridSearchProvider: SearchProvider = {
       bm25SearchProvider.search(graph, query, windowSize),
       lexicalSearchProvider.search(graph, query, windowSize),
     ];
-    const fused = new Map<string, SearchResult & {
-      sourceProviders: SearchProviderName[];
-    }>();
-
-    for (const results of sources) {
-      results.forEach((result, index) => {
-        const existing = fused.get(result.node.id);
-        const rankScore = 100 / (60 + index + 1);
-        if (!existing) {
-          fused.set(result.node.id, {
-            ...result,
-            score: rankScore,
-            provider: "hybrid",
-            reason: "",
-            sourceProviders: [result.provider],
-          });
-          return;
-        }
-
-        existing.score += rankScore;
-        existing.matchedFields = unique([
-          ...existing.matchedFields,
-          ...result.matchedFields,
-        ]).sort();
-        existing.matchedTerms = unique([
-          ...existing.matchedTerms,
-          ...result.matchedTerms,
-        ]).sort();
-        existing.sourceProviders = unique([
-          ...existing.sourceProviders,
-          result.provider,
-        ]) as SearchProviderName[];
-      });
-    }
-
-    return [...fused.values()]
-      .map((result) => ({
-        ...result,
-        sourceProviders: sortSourceProviders(result.sourceProviders),
-        reason: `Hybrid reciprocal rank fusion from ${sortSourceProviders(result.sourceProviders).join(", ")} matched ${result.matchedFields.join(", ")} for ${result.matchedTerms.join(", ")}`,
-      }))
-      .sort((a, b) => b.score - a.score || a.node.id.localeCompare(b.node.id))
-      .slice(0, limit);
+    return fuseSearchResults(sources, limit);
   },
 };
+
+export function fuseSearchResults(
+  sources: SearchResult[][],
+  limit: number,
+): SearchResult[] {
+  const fused = new Map<string, SearchResult & {
+    sourceProviders: SearchProviderName[];
+  }>();
+
+  for (const results of sources) {
+    results.forEach((result, index) => {
+      const existing = fused.get(result.node.id);
+      const rankScore = 100 / (60 + index + 1);
+      if (!existing) {
+        fused.set(result.node.id, {
+          ...result,
+          score: rankScore,
+          provider: "hybrid",
+          reason: "",
+          sourceProviders: [result.provider],
+        });
+        return;
+      }
+
+      existing.score += rankScore;
+      existing.matchedFields = unique([
+        ...existing.matchedFields,
+        ...result.matchedFields,
+      ]).sort();
+      existing.matchedTerms = unique([
+        ...existing.matchedTerms,
+        ...result.matchedTerms,
+      ]).sort();
+      existing.sourceProviders = unique([
+        ...existing.sourceProviders,
+        result.provider,
+      ]) as SearchProviderName[];
+    });
+  }
+
+  return [...fused.values()]
+    .map((result) => ({
+      ...result,
+      sourceProviders: sortSourceProviders(result.sourceProviders),
+      reason: `Hybrid reciprocal rank fusion from ${sortSourceProviders(result.sourceProviders).join(", ")} matched ${result.matchedFields.join(", ")} for ${result.matchedTerms.join(", ")}`,
+    }))
+    .sort((a, b) => b.score - a.score || a.node.id.localeCompare(b.node.id))
+    .slice(0, limit);
+}
 
 function scoreNodeLexically(node: SkillNode, queryTerms: string[]): SearchResult {
   const fields = {
@@ -298,7 +317,8 @@ function sortSourceProviders(providers: SearchProviderName[]): SearchProviderNam
   const order = new Map<SearchProviderName, number>([
     ["bm25", 0],
     ["lexical", 1],
-    ["hybrid", 2],
+    ["semantic", 2],
+    ["hybrid", 3],
   ]);
   return [...providers].sort(
     (a, b) => (order.get(a) ?? 99) - (order.get(b) ?? 99),

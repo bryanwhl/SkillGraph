@@ -35,6 +35,20 @@ describe("skillgraph CLI", () => {
     const indexResult = await execFileAsync(process.execPath, [tsx, ...commonArgs, "index"]);
     expect(indexResult.stdout).toContain("Indexed 6 nodes");
 
+    const embeddingIndexResult = await execFileAsync(process.execPath, [
+      tsx,
+      ...commonArgs,
+      "embeddings",
+      "index",
+      "--provider",
+      "deterministic",
+      "--format",
+      "json",
+    ]);
+    const embeddingIndexJson = JSON.parse(embeddingIndexResult.stdout);
+    expect(embeddingIndexJson.provider).toBe("deterministic");
+    expect(embeddingIndexJson.vectors).toHaveLength(6);
+
     const searchResult = await execFileAsync(process.execPath, [
       tsx,
       ...commonArgs,
@@ -72,6 +86,21 @@ describe("skillgraph CLI", () => {
     ]);
     const hybridSearchJson = JSON.parse(hybridSearchResult.stdout);
     expect(hybridSearchJson.results[0].provider).toBe("hybrid");
+    expect(hybridSearchJson.results[0].sourceProviders).toContain("semantic");
+
+    const semanticSearchResult = await execFileAsync(process.execPath, [
+      tsx,
+      ...commonArgs,
+      "search",
+      "visual screenshot review",
+      "--strategy",
+      "semantic",
+      "--format",
+      "json",
+    ]);
+    const semanticSearchJson = JSON.parse(semanticSearchResult.stdout);
+    expect(semanticSearchJson.results[0].node.id).toBe("visual-qa");
+    expect(semanticSearchJson.results[0].provider).toBe("semantic");
 
     const resolveResult = await execFileAsync(process.execPath, [
       tsx,

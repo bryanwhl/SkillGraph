@@ -19,6 +19,7 @@ export type ResolveTaskOptions = {
   agent: string;
   budgetTokens: number;
   searchProvider?: SearchProviderName;
+  searchResults?: SearchResult[];
   now?: string;
 };
 
@@ -26,10 +27,12 @@ export function resolveTask(
   graph: SkillGraph,
   options: ResolveTaskOptions,
 ): Resolution {
-  const searchResults = searchSkills(graph, options.task, {
-    limit: 8,
-    ...(options.searchProvider ? { provider: options.searchProvider } : {}),
-  });
+  const searchResults =
+    options.searchResults ??
+    searchSkills(graph, options.task, {
+      limit: 8,
+      ...(options.searchProvider ? { provider: options.searchProvider } : {}),
+    });
   const direct = searchResults[0];
   const selected: SelectedNode[] = [];
   const selectedIds = new Set<string>();

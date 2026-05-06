@@ -222,10 +222,35 @@ members:
 }
 ```
 
+## Embedding Index
+
+Semantic search stores local vectors separately from the canonical graph:
+
+```json
+{
+  "version": 1,
+  "provider": "qwen3-local",
+  "model": "Qwen/Qwen3-Embedding-0.6B",
+  "dimensions": 1024,
+  "indexedAt": "2026-05-06T00:00:00.000Z",
+  "graphIndexedAt": "2026-05-06T00:00:00.000Z",
+  "vectors": [
+    {
+      "node": "frontend-design",
+      "textHash": "sha256-of-normalized-embedding-text",
+      "vector": [0.01, -0.02]
+    }
+  ]
+}
+```
+
+Embedding indexes are optional local state under `.skillgraph/embeddings.json`. They are not source-of-truth graph data and can be deleted or rebuilt.
+
 ## Schema Principles
 
 - Preserve original skill content.
 - Add generated summaries as separate layers.
+- Store semantic vectors as local, rebuildable derived data.
 - Track provenance for inferred data.
 - Treat unreviewed edges as proposals.
 - Prefer graph internals and tree-like views.

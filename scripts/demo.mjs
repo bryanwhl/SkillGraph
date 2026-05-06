@@ -24,13 +24,22 @@ try {
   section("Index demo skills");
   run([...baseArgs, "index"]);
 
+  section("Build deterministic demo embeddings");
+  run([...baseArgs, "embeddings", "index", "--provider", "deterministic"]);
+
+  section("Show embedding index details");
+  run([...baseArgs, "embeddings", "info"]);
+
   section("Search for frontend polish skills");
   run([...baseArgs, "search", "React frontend polish", "--limit", "4"]);
 
   section("Compare the lexical baseline");
   run([...baseArgs, "search", "React frontend polish", "--strategy", "lexical", "--limit", "4"]);
 
-  section("Fuse BM25 and lexical rankings");
+  section("Search by semantic similarity");
+  run([...baseArgs, "search", "visual screenshots review", "--strategy", "semantic", "--limit", "4"]);
+
+  section("Fuse BM25, lexical, and semantic rankings");
   run([...baseArgs, "search", "React frontend polish", "--strategy", "hybrid", "--limit", "4"]);
 
   section("Cache remote skills.sh candidates");

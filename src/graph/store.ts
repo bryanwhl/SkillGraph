@@ -1,5 +1,9 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  type EmbeddingIndex,
+  embeddingIndexSchema,
+} from "../embeddings/indexer.js";
 import { slugify } from "../shared/strings.js";
 import {
   type LoadedContextEntry,
@@ -28,6 +32,10 @@ export function lastResolutionPath(cwd: string): string {
 
 export function loadedContextPath(cwd: string): string {
   return path.join(stateDirectory(cwd), "loaded-context.json");
+}
+
+export function embeddingsPath(cwd: string): string {
+  return path.join(stateDirectory(cwd), "embeddings.json");
 }
 
 export function cacheDirectory(cwd: string): string {
@@ -91,6 +99,36 @@ export async function loadLoadedContext(cwd: string): Promise<LoadedContextEntry
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       return [];
+    }
+    throw error;
+  }
+}
+
+export async function saveEmbeddingIndex(
+  cwd: string,
+  index: EmbeddingIndex,
+): Promise<void> {
+  await mkdir(stateDirectory(cwd), { recursive: true });
+  await writeFile(
+    embeddingsPath(cwd),
+    `${JSON.stringify(embeddingIndexSchema.parse(index), null, 2)}\n`,
+    "utf8",
+  );
+}
+
+export async function loadEmbeddingIndex(cwd: string): Promise<EmbeddingIndex> {
+  const raw = await readFile(embeddingsPath(cwd), "utf8");
+  return embeddingIndexSchema.parse(JSON.parse(raw));
+}
+
+export async function tryLoadEmbeddingIndex(
+  cwd: string,
+): Promise<EmbeddingIndex | undefined> {
+  try {
+    return await loadEmbeddingIndex(cwd);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return undefined;
     }
     throw error;
   }
