@@ -1,5 +1,5 @@
 {
-  "name": "skillgraph-resolver",
+  "name": "skillgraph",
   "version": "0.1.0",
   "description": "SkillGraph is a runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.",
   "type": "module",
@@ -34,12 +34,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bryanwhl/skillgraph-resolver.git"
+    "url": "git+https://github.com/bryanwhl/SkillGraph.git"
   },
   "bugs": {
-    "url": "https://github.com/bryanwhl/skillgraph-resolver/issues"
+    "url": "https://github.com/bryanwhl/SkillGraph/issues"
   },
-  "homepage": "https://github.com/bryanwhl/skillgraph-resolver#readme",
+  "homepage": "https://github.com/bryanwhl/SkillGraph#readme",
   "keywords": [
     "agent-skills",
     "skills",

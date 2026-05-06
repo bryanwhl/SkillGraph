@@ -1,6 +1,6 @@
 # Security
 
-SkillGraph Resolver will interact with remote skill repositories, so security must be part of the design from the beginning.
+SkillGraph will interact with remote skill repositories, so security must be part of the design from the beginning.
 
 ## MVP Security Requirements
 
