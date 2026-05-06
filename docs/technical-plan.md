@@ -71,7 +71,9 @@ Recommended stack:
 - Validation: `zod`.
 - Markdown and frontmatter parsing: `gray-matter`.
 - YAML parsing: `yaml`.
-- Local search: `minisearch` or `flexsearch`.
+- Local search v0.1: deterministic lexical scorer.
+- Local search v0.2: BM25 provider, likely `minisearch`.
+- Semantic search v0.3+: optional embeddings provider behind the same retrieval interface.
 - Tests: `vitest`.
 - Package manager: `npm` unless the implementation chooses a workspace-oriented alternative.
 - Initial graph store: JSON files under `.skillgraph/`.
@@ -213,6 +215,120 @@ Given a task query, it should:
 
 The first scoring system can be lexical. Embeddings and LLM-assisted relationship proposals should come after deterministic behavior is useful.
 
+## Search Evolution Plan
+
+Search should improve in phases so each retrieval upgrade can be measured against the current resolver behavior.
+
+### v0.1: Deterministic Lexical Baseline
+
+The launch version uses a deterministic lexical scorer over names, descriptions, tags, and capabilities.
+
+This keeps the first resolver:
+
+- offline;
+- dependency-light;
+- easy to explain;
+- easy to test with small fixtures.
+
+The baseline should remain available in tests so later retrieval providers can be compared against it.
+
+### v0.1.1: Relevance Evaluation Harness
+
+Before replacing the scorer, add fixtures that capture expected ranking behavior.
+
+The harness should include:
+
+- representative skill nodes;
+- representative task queries;
+- expected top results;
+- expected ancestor and frontier behavior;
+- expected remote missing-skill behavior;
+- regression tests for ranking and resolver explanations.
+
+This prevents BM25 or semantic search from feeling better only because it is more complex.
+
+### v0.2: BM25 Lexical Retrieval
+
+Add a `SearchProvider` abstraction and implement a BM25-backed provider, likely with MiniSearch.
+
+Suggested searchable fields:
+
+- `name`, highest boost;
+- `tags`, high boost;
+- `capabilities`, high boost;
+- `description`, medium boost;
+- `triggerPhrases`, medium boost when available;
+- `source` metadata, low boost or filter-only.
+
+BM25 should retrieve candidate nodes. SkillGraph-specific resolver behavior should remain separate:
+
+- installed/local preference;
+- graph ancestor expansion;
+- prerequisite and complement handling;
+- conflict detection;
+- context depth assignment;
+- missing remote skill explanation.
+
+This keeps BM25 as retrieval, not as the whole product brain.
+
+### v0.3: Persistent and Unified Retrieval
+
+Once BM25 works locally, persist or rebuild its index under `.skillgraph/`.
+
+Remote candidates from skills.sh should be normalized into the same searchable document shape as local skills, while keeping install approval explicit.
+
+The resolver should be able to rank:
+
+- installed local skills;
+- cached remote candidates;
+- missing but installable skills.
+
+### v0.4: Optional Semantic Retrieval
+
+Add embeddings after BM25 is useful and measurable.
+
+Embed:
+
+- skill names;
+- descriptions;
+- tags;
+- capabilities;
+- operational summaries when available.
+
+Store vectors locally with enough metadata to know when they are stale:
+
+- provider;
+- model;
+- source hash;
+- generated timestamp.
+
+Human-in-the-loop approval is required before enabling any provider that uploads local task text, repository context, or private skill content.
+
+### v0.5: Hybrid Retrieval
+
+Combine BM25 and semantic results using a stable fusion strategy, such as reciprocal rank fusion.
+
+The hybrid retriever should:
+
+- preserve exact lexical wins when the query clearly names a skill or domain;
+- recover conceptual matches that lexical search misses;
+- explain whether each candidate came from BM25, semantic retrieval, graph expansion, or a combination;
+- remain optional for privacy-sensitive local-only workflows.
+
+### v0.6: Semantic Edge Proposals
+
+Use embeddings and LLM-assisted proposals to suggest graph edges only after retrieval quality is validated.
+
+Candidate semantic edges must include:
+
+- proposed edge type;
+- confidence;
+- provenance;
+- explanation;
+- review status.
+
+They should not become canonical without human review.
+
 ## Context Depths
 
 The first implementation should support:
@@ -248,6 +364,7 @@ Build:
 - `skillgraph search "<query>"`.
 - Lexical ranking over names, descriptions, tags, and capabilities.
 - Markdown and JSON output.
+- Search provider boundary that can later support BM25, semantic, and hybrid retrieval.
 
 Human decisions:
 

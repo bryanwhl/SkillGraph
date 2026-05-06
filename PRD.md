@@ -364,6 +364,16 @@ The resolver must:
 - Return expansion options.
 - Explain the selected path.
 
+Retrieval should roll out in phases:
+
+1. Deterministic lexical retrieval for the first local MVP.
+2. BM25 lexical retrieval once relevance tests exist.
+3. Unified BM25 retrieval across local skills and cached remote candidates.
+4. Optional semantic retrieval using embeddings.
+5. Hybrid retrieval that fuses BM25, semantic similarity, and graph-aware reranking.
+
+Semantic retrieval must be optional and must respect the privacy requirements in section 14.2.
+
 ### 13.4 Installation
 
 The system must:
@@ -472,13 +482,15 @@ Use a staged approach:
 
 Given a task:
 
-1. Embed and classify the task.
+1. Normalize and classify the task using the enabled retrieval providers.
 2. Retrieve candidate nodes.
 3. Add ancestors and prerequisites.
 4. Add high-value complements.
 5. Remove conflicts or ask the user to choose.
 6. Assign context depth under budget.
 7. Return a frontier for future expansion.
+
+The first implementation should retrieve candidates with deterministic lexical scoring. Later versions should add BM25, then optional semantic embeddings, then hybrid fusion. Embedding the task should only happen when semantic retrieval is enabled and the user has approved any provider that uploads task or repository context.
 
 Draft scoring:
 

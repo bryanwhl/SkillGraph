@@ -12,11 +12,12 @@ flowchart LR
   B --> E["Normalizer"]
   E --> F["Graph builder"]
   F --> G["Local graph store"]
-  G --> H["Runtime resolver"]
-  H --> I["Agent skill"]
-  H --> J["CLI"]
-  H --> K["Website API"]
-  H --> L["Installer adapter"]
+  G --> H["Search and retrieval providers"]
+  H --> I["Runtime resolver"]
+  I --> J["Agent skill"]
+  I --> K["CLI"]
+  I --> L["Website API"]
+  I --> M["Installer adapter"]
 ```
 
 ## Components
@@ -73,6 +74,30 @@ The first version should use a simple local file store:
 - `skillgraph.cache/` for fetched remote metadata.
 
 A future version could use SQLite for better search, caching, and migrations.
+
+### Search and Retrieval Providers
+
+Search should sit between the graph store and resolver.
+
+The resolver should depend on a provider interface instead of one scoring implementation. This allows SkillGraph to improve retrieval without changing graph expansion, conflict detection, context depth assignment, or explanations.
+
+Planned providers:
+
+- Deterministic lexical provider for the v0.1 baseline.
+- BM25 provider for local lexical ranking, likely backed by MiniSearch.
+- Remote metadata provider for cached skills.sh candidates.
+- Optional semantic provider for embedding similarity.
+- Hybrid provider that fuses BM25, semantic, and graph-aware signals.
+
+The provider output should include:
+
+- candidate node id;
+- score or rank;
+- matched fields;
+- retrieval source, such as lexical, BM25, semantic, remote, or graph expansion;
+- explanation metadata for resolver output.
+
+Semantic providers must be optional. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
 
 ### Runtime Resolver
 
