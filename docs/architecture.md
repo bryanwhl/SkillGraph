@@ -99,7 +99,7 @@ The provider output should include:
 
 Semantic providers must be optional. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
 
-The current implementation ships the deterministic lexical and BM25 providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons.
+The current implementation ships the deterministic lexical, BM25, and hybrid providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons, and `--strategy hybrid` fuses BM25 plus lexical rankings with reciprocal rank fusion.
 
 Remote discovery is implemented as a dry-run adapter over `npx skills find`. It parses remote candidates, caches them, and can include them as `installed: false` graph nodes, but it does not install or execute remote skill content.
 

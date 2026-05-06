@@ -376,6 +376,8 @@ Semantic retrieval must be optional and must respect the privacy requirements in
 
 Current implementation: BM25 is the default local retrieval strategy for `search` and `resolve`, with deterministic lexical retrieval still available as a baseline strategy.
 
+Current implementation also supports hybrid BM25 plus lexical retrieval through reciprocal rank fusion. Semantic embeddings are not enabled by default.
+
 ### 13.4 Installation
 
 The system must:

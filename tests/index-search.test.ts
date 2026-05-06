@@ -94,6 +94,25 @@ describe("indexSkills and searchSkills", () => {
     expect(results[0]?.reason).toContain("BM25");
   });
 
+  it("can fuse BM25 and lexical rankings with a hybrid provider", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const results = searchSkills(graph, "frontend polish production ui", {
+      provider: "hybrid",
+      limit: 3,
+    });
+
+    expect(results[0]?.node.id).toBe("frontend-design");
+    expect(results[0]?.provider).toBe("hybrid");
+    expect(results[0]?.sourceProviders).toEqual(["bm25", "lexical"]);
+    expect(results[0]?.reason).toContain("reciprocal rank fusion");
+  });
+
   it("does not return installed skills that have no lexical match", async () => {
     const graph = await indexSkills({
       cwd: fixturePath(),

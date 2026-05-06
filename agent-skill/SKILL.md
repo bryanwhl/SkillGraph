@@ -37,7 +37,7 @@ Use this skill when a task could benefit from specialized agent skills, especial
 - `skillgraph index`: scan local skill roots and write `.skillgraph/index.json`.
 - `skillgraph index --skills-sh-query "<query>"`: include not-installed skills.sh candidates in the graph for the current domain.
 - `skillgraph remote-cache "<query>"`: cache skills.sh candidates and show approval-required install commands.
-- `skillgraph search "<query>"`: search the local graph with BM25 by default; use `--strategy lexical` only when comparing against the deterministic baseline.
+- `skillgraph search "<query>"`: search the local graph with BM25 by default; use `--strategy lexical` for baseline comparison or `--strategy hybrid` for BM25 plus lexical fusion.
 - `skillgraph resolve "<task>"`: return selected nodes, context depths, frontier nodes, conflicts, missing nodes, scoring provider provenance, and reasons.
 - `skillgraph expand <node-id> --depth <depth>`: load deeper context for one node.
 - `skillgraph context`: show context layers loaded in the current workspace.

@@ -4,7 +4,7 @@ import MiniSearch, {
 import { type SkillGraph, type SkillNode } from "../graph/schema.js";
 import { tokenize, unique } from "../shared/strings.js";
 
-export const SEARCH_PROVIDER_NAMES = ["bm25", "lexical"] as const;
+export const SEARCH_PROVIDER_NAMES = ["bm25", "lexical", "hybrid"] as const;
 export type SearchProviderName = (typeof SEARCH_PROVIDER_NAMES)[number];
 
 export type SearchSkillsOptions = {
@@ -19,6 +19,7 @@ export type SearchResult = {
   provider: SearchProviderName;
   matchedFields: string[];
   matchedTerms: string[];
+  sourceProviders?: SearchProviderName[];
 };
 
 export type SearchProvider = {
@@ -58,6 +59,9 @@ function normalizeSearchOptions(
 function providerFor(provider: SearchProviderName): SearchProvider {
   if (provider === "lexical") {
     return lexicalSearchProvider;
+  }
+  if (provider === "hybrid") {
+    return hybridSearchProvider;
   }
   return bm25SearchProvider;
 }
@@ -110,6 +114,60 @@ const bm25SearchProvider: SearchProvider = {
       })
       .map((result) => resultToBm25SearchResult(result, nodeById))
       .filter((result): result is SearchResult => Boolean(result))
+      .sort((a, b) => b.score - a.score || a.node.id.localeCompare(b.node.id))
+      .slice(0, limit);
+  },
+};
+
+const hybridSearchProvider: SearchProvider = {
+  name: "hybrid",
+  search(graph, query, limit) {
+    const windowSize = Math.max(limit, 20);
+    const sources = [
+      bm25SearchProvider.search(graph, query, windowSize),
+      lexicalSearchProvider.search(graph, query, windowSize),
+    ];
+    const fused = new Map<string, SearchResult & {
+      sourceProviders: SearchProviderName[];
+    }>();
+
+    for (const results of sources) {
+      results.forEach((result, index) => {
+        const existing = fused.get(result.node.id);
+        const rankScore = 100 / (60 + index + 1);
+        if (!existing) {
+          fused.set(result.node.id, {
+            ...result,
+            score: rankScore,
+            provider: "hybrid",
+            reason: "",
+            sourceProviders: [result.provider],
+          });
+          return;
+        }
+
+        existing.score += rankScore;
+        existing.matchedFields = unique([
+          ...existing.matchedFields,
+          ...result.matchedFields,
+        ]).sort();
+        existing.matchedTerms = unique([
+          ...existing.matchedTerms,
+          ...result.matchedTerms,
+        ]).sort();
+        existing.sourceProviders = unique([
+          ...existing.sourceProviders,
+          result.provider,
+        ]) as SearchProviderName[];
+      });
+    }
+
+    return [...fused.values()]
+      .map((result) => ({
+        ...result,
+        sourceProviders: sortSourceProviders(result.sourceProviders),
+        reason: `Hybrid reciprocal rank fusion from ${sortSourceProviders(result.sourceProviders).join(", ")} matched ${result.matchedFields.join(", ")} for ${result.matchedTerms.join(", ")}`,
+      }))
       .sort((a, b) => b.score - a.score || a.node.id.localeCompare(b.node.id))
       .slice(0, limit);
   },
@@ -234,4 +292,15 @@ function resultToBm25SearchResult(
     matchedFields,
     matchedTerms,
   };
+}
+
+function sortSourceProviders(providers: SearchProviderName[]): SearchProviderName[] {
+  const order = new Map<SearchProviderName, number>([
+    ["bm25", 0],
+    ["lexical", 1],
+    ["hybrid", 2],
+  ]);
+  return [...providers].sort(
+    (a, b) => (order.get(a) ?? 99) - (order.get(b) ?? 99),
+  );
 }

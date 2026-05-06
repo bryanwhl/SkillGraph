@@ -139,6 +139,8 @@ Remaining work:
 
 ## Phase 4: Semantic and Hybrid Retrieval
 
+Status: partially implemented for BM25 plus lexical hybrid fusion. Semantic embeddings remain gated on provider and privacy decisions.
+
 Goal: add semantic matching without losing deterministic, explainable behavior.
 
 Scope:

@@ -30,6 +30,9 @@ try {
   section("Compare the lexical baseline");
   run([...baseArgs, "search", "React frontend polish", "--strategy", "lexical", "--limit", "4"]);
 
+  section("Fuse BM25 and lexical rankings");
+  run([...baseArgs, "search", "React frontend polish", "--strategy", "hybrid", "--limit", "4"]);
+
   section("Cache remote skills.sh candidates");
   run([
     cli,

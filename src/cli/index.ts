@@ -113,7 +113,7 @@ program
   .argument("<query>", "search query")
   .option("--format <format>", "json or markdown", "markdown")
   .option("--limit <number>", "maximum result count", parseInteger, 10)
-  .option("--strategy <strategy>", "search strategy: bm25 or lexical", "bm25")
+  .option("--strategy <strategy>", "search strategy: bm25, lexical, or hybrid", "bm25")
   .action(async (
     query: string,
     options: { format: string; limit: number; strategy: string },
@@ -138,7 +138,7 @@ program
   .option("--agent <agent>", "agent runtime", "codex")
   .option("--budget <tokens>", "token budget", parseInteger, 4000)
   .option("--format <format>", "json or markdown", "markdown")
-  .option("--strategy <strategy>", "search strategy: bm25 or lexical", "bm25")
+  .option("--strategy <strategy>", "search strategy: bm25, lexical, or hybrid", "bm25")
   .action(
     async (
       task: string,

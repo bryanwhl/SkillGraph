@@ -50,6 +50,12 @@ Compare against the deterministic lexical baseline:
 node dist/cli/index.js search "frontend design" --strategy lexical
 ```
 
+Fuse BM25 and lexical rankings:
+
+```bash
+node dist/cli/index.js search "frontend design" --strategy hybrid
+```
+
 Cache remote skills.sh candidates without installing them:
 
 ```bash
@@ -100,7 +106,7 @@ The demo indexes example skills, searches the graph, caches remote candidates, r
 - `skillgraph index`: scans skill roots and manual graph files, then writes `.skillgraph/index.json`.
 - `skillgraph index --skills-sh-query "<query>"`: includes cached, not-installed skills.sh candidates as remote graph nodes.
 - `skillgraph remote-cache "<query>"`: searches skills.sh through the official Skills CLI, caches metadata under `.skillgraph/cache/`, and prints approval-required install commands.
-- `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline.
+- `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline or `--strategy hybrid` to fuse BM25 and lexical rankings.
 - `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
 - `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available. `summary` maps to the deterministic `l2` operational summary.
 - `skillgraph context`: shows context layers expanded in the current workspace.

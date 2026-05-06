@@ -8,4 +8,4 @@ Run it from the repository root:
 npm run demo
 ```
 
-The demo indexes local skills, searches the graph with BM25, compares the deterministic lexical baseline, caches fixture-based skills.sh candidates, resolves a frontend polish task, expands summary, full, and linked artifact context, shows loaded context tracking, explains the saved resolution, and then resolves a remote accessibility skill to show the approval-required install path.
+The demo indexes local skills, searches the graph with BM25, compares the deterministic lexical baseline, shows hybrid BM25 plus lexical fusion, caches fixture-based skills.sh candidates, resolves a frontend polish task, expands summary, full, and linked artifact context, shows loaded context tracking, explains the saved resolution, and then resolves a remote accessibility skill to show the approval-required install path.

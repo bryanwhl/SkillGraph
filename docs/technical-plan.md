@@ -325,6 +325,8 @@ Human-in-the-loop approval is required before enabling any provider that uploads
 
 Combine BM25 and semantic results using a stable fusion strategy, such as reciprocal rank fusion.
 
+Current implementation supports reciprocal rank fusion over BM25 and deterministic lexical retrieval via `--strategy hybrid`. Semantic results can join the same fusion path after an embedding provider is approved.
+
 The hybrid retriever should:
 
 - preserve exact lexical wins when the query clearly names a skill or domain;

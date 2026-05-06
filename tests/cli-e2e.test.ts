@@ -60,6 +60,19 @@ describe("skillgraph CLI", () => {
     const lexicalSearchJson = JSON.parse(lexicalSearchResult.stdout);
     expect(lexicalSearchJson.results[0].provider).toBe("lexical");
 
+    const hybridSearchResult = await execFileAsync(process.execPath, [
+      tsx,
+      ...commonArgs,
+      "search",
+      "frontend polish",
+      "--strategy",
+      "hybrid",
+      "--format",
+      "json",
+    ]);
+    const hybridSearchJson = JSON.parse(hybridSearchResult.stdout);
+    expect(hybridSearchJson.results[0].provider).toBe("hybrid");
+
     const resolveResult = await execFileAsync(process.execPath, [
       tsx,
       ...commonArgs,
