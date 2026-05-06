@@ -1,9 +1,9 @@
 ---
-name: skillgraph-resolver
-description: Use the local SkillGraph Resolver CLI to resolve tasks into graph-based skill context, load shallow context first, and expand full skills only when needed.
+name: skillgraph
+description: Use the local SkillGraph CLI to resolve tasks into graph-based skill context, load shallow context first, and expand full skills only when needed.
 ---
 
-# SkillGraph Resolver
+# SkillGraph
 
 Use this skill when a task could benefit from specialized agent skills, especially work involving frontend polish, testing, documentation, deployment, security review, performance, or framework-specific implementation.
 

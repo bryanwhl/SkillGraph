@@ -1,6 +1,6 @@
 # Architecture
 
-SkillGraph Resolver should be designed as a local-first graph and resolver that can later power a hosted website.
+SkillGraph should be designed as a local-first graph and resolver that can later power a hosted website.
 
 ## System Overview
 

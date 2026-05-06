@@ -1,8 +1,8 @@
-# Product Requirements Document: SkillGraph Resolver
+# Product Requirements Document: SkillGraph
 
 ## 1. Summary
 
-SkillGraph Resolver is a runtime and indexing layer that organizes AI agent skills into a graph for progressive disclosure. It helps an agent discover, select, load, and expand skills during a task without flooding the context window or relying on a one-shot flat skill search.
+SkillGraph is a runtime and indexing layer that organizes AI agent skills into a graph for progressive disclosure. It helps an agent discover, select, load, and expand skills during a task without flooding the context window or relying on a one-shot flat skill search.
 
 The first product should be a local CLI plus an agent skill that can:
 
@@ -33,7 +33,7 @@ This creates several problems:
 
 ## 3. Product Vision
 
-SkillGraph Resolver makes skills navigable and progressively disclosed.
+SkillGraph makes skills navigable and progressively disclosed.
 
 Instead of asking, "Which single skill should I load?", the agent asks:
 
@@ -198,9 +198,9 @@ The graph should be internally represented as a directed graph or DAG, with tree
 
 `find-skills` is a discovery skill. It helps search skills.sh, evaluate candidates, and install skills.
 
-SkillGraph Resolver should include discovery, but its primary value is runtime context orchestration.
+SkillGraph should include discovery, but its primary value is runtime context orchestration.
 
-| Capability | find-skills | SkillGraph Resolver |
+| Capability | find-skills | SkillGraph |
 | --- | --- | --- |
 | Search skills.sh | Yes | Yes |
 | Recommend skills | Yes | Yes |

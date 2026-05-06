@@ -1,12 +1,12 @@
 # Marketplace Strategy
 
-SkillGraph Resolver should complement existing marketplaces rather than compete with them at the beginning.
+SkillGraph should complement existing marketplaces rather than compete with them at the beginning.
 
 ## Relationship to skills.sh
 
 skills.sh is a marketplace and discovery surface for open agent skills.
 
-SkillGraph Resolver should use skills.sh as a source of truth for:
+SkillGraph should use skills.sh as a source of truth for:
 
 - Public skill discovery.
 - Skill pages.

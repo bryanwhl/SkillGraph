@@ -1,6 +1,6 @@
-# SkillGraph Resolver
+# SkillGraph
 
-SkillGraph Resolver is a proposed runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.
+SkillGraph is a proposed runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.
 
 Current agent skill systems usually work like this:
 
@@ -8,7 +8,7 @@ Current agent skill systems usually work like this:
 2. A matching skill is loaded when the model decides it is relevant.
 3. Remote marketplace discovery is separate from the agent's immediate task context.
 
-SkillGraph Resolver explores a different model:
+SkillGraph explores a different model:
 
 1. Skills are indexed as typed graph nodes.
 2. Nodes have relationships such as `requires`, `specializes`, `complements`, `conflicts_with`, and `supersedes`.
@@ -19,7 +19,7 @@ The goal is not to replace skills.sh, Claude Skills, Codex Skills, or local `SKI
 
 ## Status
 
-This repository now includes the first local-first CLI implementation for SkillGraph Resolver.
+This repository now includes the first local-first CLI implementation for SkillGraph.
 
 The current launch scope is intentionally small: local skill indexing, local search, deterministic graph resolution, context expansion, last-resolution explanations, and a companion agent skill. Hosted sync, user accounts, telemetry, and automatic remote installs are out of scope for v0.1.
 
@@ -109,7 +109,7 @@ The test suite covers:
 
 ## Project Skills
 
-This repository vendors project-level agent skills under [.agents/skills](./.agents/skills) so future agent sessions can use the same build-support workflows while developing SkillGraph Resolver.
+This repository vendors project-level agent skills under [.agents/skills](./.agents/skills) so future agent sessions can use the same build-support workflows while developing SkillGraph.
 
 Current project skills:
 
@@ -139,16 +139,6 @@ Agent skills should behave less like a flat plugin list and more like a contextu
 - Automatically installing untrusted remote skills without user approval.
 - Forcing every skill into a strict tree.
 - Requiring agent vendors to change their native skill loading behavior.
-
-## Working Name
-
-The project name is intentionally descriptive. Candidate future names:
-
-- SkillGraph
-- SkillRouter
-- SkillMap
-- ContextGraph
-- SkillWeaver
 
 ## License
 

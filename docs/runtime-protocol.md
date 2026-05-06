@@ -1,6 +1,6 @@
 # Runtime Protocol
 
-This document describes how an AI agent should use SkillGraph Resolver during a task.
+This document describes how an AI agent should use SkillGraph during a task.
 
 ## Principle
 

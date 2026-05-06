@@ -1,7 +1,7 @@
 {
   "name": "skillgraph-resolver",
   "version": "0.1.0",
-  "description": "SkillGraph Resolver is a proposed runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.",
+  "description": "SkillGraph is a runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.",
   "type": "module",
   "bin": {
     "skillgraph": "./dist/cli/index.js"

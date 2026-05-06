@@ -1,6 +1,6 @@
 # Technical Plan
 
-This document defines the first launch-ready implementation plan for SkillGraph Resolver.
+This document defines the first launch-ready implementation plan for SkillGraph.
 
 The first version should prove the product thesis with a local-first CLI and an agent skill. It should not require hosted infrastructure, user accounts, background sync, or automatic remote installs.
 
