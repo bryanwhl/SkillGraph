@@ -15,6 +15,8 @@ capabilities:
 
 Use this skill before calling frontend work complete.
 
+Reference the [visual checklist](checklist.md) when reviewing screenshots.
+
 ## Checklist
 
 - Capture desktop and mobile screenshots.

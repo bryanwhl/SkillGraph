@@ -398,7 +398,7 @@ The system must:
 - Avoid reloading duplicate content.
 - Respect a token budget.
 
-Current implementation: indexed nodes include deterministic `L2` operational summaries, and resolver budget downgrades prefer `L2` before falling back to `L1`.
+Current implementation: indexed nodes include deterministic `L2` operational summaries and safe relative Markdown links as `L4` artifacts. Resolver budget downgrades prefer `L2` before falling back to `L1`.
 
 ### 13.6 Compatibility
 

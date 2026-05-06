@@ -93,7 +93,7 @@ Run the built-in demo:
 npm run demo
 ```
 
-The demo indexes example skills, searches the graph, caches remote candidates, resolves a local frontend task, expands summary and full context, explains the saved resolution, and shows the approval-required path for a remote accessibility skill.
+The demo indexes example skills, searches the graph, caches remote candidates, resolves a local frontend task, expands summary, full, and linked artifact context, explains the saved resolution, and shows the approval-required path for a remote accessibility skill.
 
 ## CLI Commands
 
@@ -126,6 +126,7 @@ The test suite covers:
 - Retrieval relevance regression fixtures.
 - Resolver planning, ancestors, frontier nodes, conflicts, and token budgets.
 - Progressive context summaries and budget downgrades.
+- Linked local artifact expansion through `l4`.
 - Context expansion.
 - End-to-end CLI behavior over fixture skills.
 

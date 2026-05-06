@@ -56,6 +56,9 @@ try {
   section("Expand the selected frontend-design full skill");
   run([...baseArgs, "expand", "frontend-design", "--depth", "full"]);
 
+  section("Expand a linked l4 artifact");
+  run([...baseArgs, "expand", "visual-qa", "--depth", "l4"]);
+
   section("Explain the last resolution");
   run([...baseArgs, "explain", "--last"]);
 

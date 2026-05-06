@@ -92,6 +92,20 @@ describe("resolveTask and expandNode", () => {
     expect(full.content).toContain("# Frontend Design");
   });
 
+  it("expands linked l4 artifacts for installed skills", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const artifact = await expandNode(graph, "visual-qa", "l4");
+
+    expect(artifact.label).toBe("artifact: checklist.md");
+    expect(artifact.content).toContain("# Visual QA Checklist");
+  });
+
   it("expands deterministic operational summaries and uses them under tighter budgets", async () => {
     const graph = await indexSkills({
       cwd: fixturePath(),

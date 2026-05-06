@@ -43,4 +43,21 @@ describe("parseSkillFile", () => {
     expect(node.contextLayers.l2?.content).toContain("visual_hierarchy");
     expect(node.contextLayers.l3?.contentRef).toBe(filePath);
   });
+
+  it("adds linked local artifacts as l4 context layers", async () => {
+    const filePath = fixturePath("skills", "visual-qa", "SKILL.md");
+
+    const node = await parseSkillFile(filePath, {
+      rootPath: fixturePath("skills", "visual-qa"),
+      sourceType: "project",
+    });
+
+    expect(node.contextLayers.l4).toEqual([
+      expect.objectContaining({
+        depth: "l4",
+        label: "artifact: checklist.md",
+        contentRef: fixturePath("skills", "visual-qa", "checklist.md"),
+      }),
+    ]);
+  });
 });

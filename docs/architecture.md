@@ -117,7 +117,7 @@ Responsibilities:
 - Return an expansion frontier.
 - Explain the selected graph path.
 
-The current resolver can use `l2` operational summaries as a middle context layer. When a selected full skill would exceed the budget, SkillGraph downgrades from `l3` to `l2` before falling back to `l1`.
+The current resolver can use `l2` operational summaries as a middle context layer. When a selected full skill would exceed the budget, SkillGraph downgrades from `l3` to `l2` before falling back to `l1`. Local skills can also expose safe relative Markdown links as `l4` artifacts for on-demand expansion.
 
 ### Installer Adapter
 

@@ -1,9 +1,14 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 import { buildOperationalSummary } from "../context/operational-summary.js";
 import { estimateTokens } from "../context/token-estimate.js";
-import { type SkillNode, type SourceType, skillNodeSchema } from "../graph/schema.js";
+import {
+  type ContextLayer,
+  type SkillNode,
+  type SourceType,
+  skillNodeSchema,
+} from "../graph/schema.js";
 import { slugify, titleFromMarkdown, unique } from "../shared/strings.js";
 
 type FrontmatterValue = string | string[] | undefined;
@@ -49,6 +54,7 @@ export async function parseSkillFile(
     capabilities,
     markdown: parsed.content,
   });
+  const artifactLayers = await buildArtifactLayers(parsed.content, path.dirname(filePath));
 
   const node: SkillNode = {
     id,
@@ -94,6 +100,7 @@ export async function parseSkillFile(
         tokenEstimate: estimateTokens(raw),
         contentRef: filePath,
       },
+      ...(artifactLayers.length > 0 ? { l4: artifactLayers } : {}),
     },
     provenance: {
       indexedAt: options.now ?? new Date().toISOString(),
@@ -103,6 +110,76 @@ export async function parseSkillFile(
   };
 
   return skillNodeSchema.parse(node);
+}
+
+async function buildArtifactLayers(
+  markdown: string,
+  skillDirectory: string,
+): Promise<ContextLayer[]> {
+  const artifactRefs = linkedLocalArtifacts(markdown, skillDirectory);
+  const layers: ContextLayer[] = [];
+
+  for (const artifact of artifactRefs) {
+    if (!(await exists(artifact.absolutePath))) {
+      continue;
+    }
+    const content = await readFile(artifact.absolutePath, "utf8");
+    layers.push({
+      depth: "l4",
+      label: `artifact: ${artifact.relativePath}`,
+      tokenEstimate: estimateTokens(content),
+      contentRef: artifact.absolutePath,
+    });
+  }
+
+  return layers;
+}
+
+function linkedLocalArtifacts(
+  markdown: string,
+  skillDirectory: string,
+): Array<{ relativePath: string; absolutePath: string }> {
+  const artifacts = new Map<string, { relativePath: string; absolutePath: string }>();
+  const skillRoot = path.resolve(skillDirectory);
+  const rootPrefix = `${skillRoot.toLowerCase()}${path.sep}`;
+
+  for (const match of markdown.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+    const rawTarget = match[1]?.trim();
+    if (!rawTarget || ignoredLinkTarget(rawTarget)) {
+      continue;
+    }
+    const target = rawTarget.split(/\s+/)[0]?.replace(/^<|>$/g, "");
+    if (!target || ignoredLinkTarget(target)) {
+      continue;
+    }
+    const absolutePath = path.resolve(skillRoot, target);
+    const normalized = absolutePath.toLowerCase();
+    if (normalized !== skillRoot.toLowerCase() && !normalized.startsWith(rootPrefix)) {
+      continue;
+    }
+    const relativePath = path.relative(skillRoot, absolutePath).replace(/\\/g, "/");
+    artifacts.set(absolutePath, {
+      relativePath,
+      absolutePath,
+    });
+  }
+
+  return [...artifacts.values()].sort((a, b) =>
+    a.relativePath.localeCompare(b.relativePath),
+  );
+}
+
+function ignoredLinkTarget(target: string): boolean {
+  return /^(?:https?:|mailto:|#)/i.test(target);
+}
+
+async function exists(targetPath: string): Promise<boolean> {
+  try {
+    await access(targetPath);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function normalizeString(value: FrontmatterValue): string | undefined {

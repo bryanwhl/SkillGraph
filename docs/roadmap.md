@@ -115,7 +115,7 @@ Success criteria:
 
 ## Phase 3: Progressive Context Layers
 
-Status: partially implemented for deterministic `l2` operational summaries and budget-aware downgrades.
+Status: implemented for deterministic `l2` operational summaries, linked local `l4` artifacts, and budget-aware downgrades.
 
 Goal: formalize depth-based loading.
 
@@ -135,7 +135,7 @@ Success criteria:
 Remaining work:
 
 - Track loaded layers across multi-step agent sessions.
-- Add `l4` referenced artifacts for scripts, examples, templates, and assets.
+- Expand `l4` artifact extraction beyond Markdown links if skills adopt explicit artifact metadata.
 
 ## Phase 4: Semantic and Hybrid Retrieval
 

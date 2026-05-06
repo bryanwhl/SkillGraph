@@ -360,8 +360,9 @@ Current implementation:
 - `l1`: deterministic capability card.
 - `l2`: deterministic operational summary.
 - `l3`: full installed `SKILL.md` context.
+- `l4`: linked local artifacts from safe relative Markdown links.
 
-`l4` referenced artifacts remain deferred. Budget downgrades prefer `l2` before falling back to `l1`.
+Budget downgrades prefer `l2` before falling back to `l1`.
 
 ## Build Slices
 

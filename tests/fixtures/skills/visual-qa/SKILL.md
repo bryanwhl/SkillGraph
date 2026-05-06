@@ -13,3 +13,5 @@ capabilities:
 # Visual QA
 
 Use this skill before completing frontend changes that need visual verification.
+
+Reference the [visual checklist](checklist.md) when reviewing screenshots.
