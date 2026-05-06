@@ -21,7 +21,7 @@ The goal is not to replace skills.sh, Claude Skills, Codex Skills, or local `SKI
 
 This repository now includes the first local-first CLI implementation for SkillGraph.
 
-The current launch scope is intentionally small: local skill indexing, local search, deterministic graph resolution, context expansion, last-resolution explanations, and a companion agent skill. Hosted sync, user accounts, telemetry, and automatic remote installs are out of scope for v0.1.
+The current launch scope is intentionally small: local skill indexing, BM25 local search with a deterministic lexical fallback, deterministic graph resolution, context expansion, last-resolution explanations, and a companion agent skill. Hosted sync, user accounts, telemetry, semantic retrieval, and automatic remote installs are out of scope for the current local-first version.
 
 ## Quickstart
 
@@ -42,6 +42,12 @@ Search the indexed graph:
 
 ```bash
 node dist/cli/index.js search "frontend design"
+```
+
+Compare against the deterministic lexical baseline:
+
+```bash
+node dist/cli/index.js search "frontend design" --strategy lexical
 ```
 
 Resolve a task into a skill context plan:
@@ -80,8 +86,8 @@ The demo indexes example skills, searches the graph, resolves a local frontend t
 ## CLI Commands
 
 - `skillgraph index`: scans skill roots and manual graph files, then writes `.skillgraph/index.json`.
-- `skillgraph search "<query>"`: ranks local graph nodes with deterministic lexical scoring.
-- `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, and explanations.
+- `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline.
+- `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
 - `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available.
 - `skillgraph explain --last`: renders the previous resolution from `.skillgraph/last-resolution.json`.
 - `skillgraph install <node-id>`: v0.1 dry-run guidance for approval-required remote installs.
@@ -101,7 +107,8 @@ The test suite covers:
 
 - `SKILL.md` parsing and normalization.
 - Local skill indexing with manual graph overlays.
-- Search ranking.
+- BM25 and deterministic lexical search ranking.
+- Retrieval relevance regression fixtures.
 - Resolver planning, ancestors, frontier nodes, conflicts, and token budgets.
 - Context expansion.
 - End-to-end CLI behavior over fixture skills.

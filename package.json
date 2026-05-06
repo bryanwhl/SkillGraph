@@ -1,6 +1,6 @@
 {
   "name": "skillgraph",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SkillGraph is a runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.",
   "type": "module",
   "bin": {
@@ -55,6 +55,7 @@
   "dependencies": {
     "commander": "^14.0.3",
     "gray-matter": "^4.0.3",
+    "minisearch": "^7.2.0",
     "yaml": "^2.8.4",
     "zod": "^4.4.3"
   },

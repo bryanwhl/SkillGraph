@@ -84,7 +84,7 @@ The resolver should depend on a provider interface instead of one scoring implem
 Planned providers:
 
 - Deterministic lexical provider for the v0.1 baseline.
-- BM25 provider for local lexical ranking, likely backed by MiniSearch.
+- BM25 provider for local lexical ranking, backed by MiniSearch.
 - Remote metadata provider for cached skills.sh candidates.
 - Optional semantic provider for embedding similarity.
 - Hybrid provider that fuses BM25, semantic, and graph-aware signals.
@@ -98,6 +98,8 @@ The provider output should include:
 - explanation metadata for resolver output.
 
 Semantic providers must be optional. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
+
+The current implementation ships the deterministic lexical and BM25 providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons.
 
 ### Runtime Resolver
 

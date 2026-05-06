@@ -8,4 +8,4 @@ Run it from the repository root:
 npm run demo
 ```
 
-The demo indexes local skills, searches the graph, resolves a frontend polish task, expands a selected skill, explains the saved resolution, and then resolves a remote accessibility skill to show the approval-required missing-skill path.
+The demo indexes local skills, searches the graph with BM25, compares the deterministic lexical baseline, resolves a frontend polish task, expands a selected skill, explains the saved resolution, and then resolves a remote accessibility skill to show the approval-required missing-skill path.

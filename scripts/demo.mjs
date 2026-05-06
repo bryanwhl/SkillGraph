@@ -27,6 +27,9 @@ try {
   section("Search for frontend polish skills");
   run([...baseArgs, "search", "React frontend polish", "--limit", "4"]);
 
+  section("Compare the lexical baseline");
+  run([...baseArgs, "search", "React frontend polish", "--strategy", "lexical", "--limit", "4"]);
+
   section("Resolve a local frontend task");
   run([
     ...baseArgs,

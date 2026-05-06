@@ -8,12 +8,17 @@ import {
   type SkillNode,
   resolutionSchema,
 } from "../graph/schema.js";
-import { searchSkills } from "./retrieve.js";
+import {
+  type SearchProviderName,
+  type SearchResult,
+  searchSkills,
+} from "./retrieve.js";
 
 export type ResolveTaskOptions = {
   task: string;
   agent: string;
   budgetTokens: number;
+  searchProvider?: SearchProviderName;
   now?: string;
 };
 
@@ -21,7 +26,10 @@ export function resolveTask(
   graph: SkillGraph,
   options: ResolveTaskOptions,
 ): Resolution {
-  const searchResults = searchSkills(graph, options.task, 8);
+  const searchResults = searchSkills(graph, options.task, {
+    limit: 8,
+    ...(options.searchProvider ? { provider: options.searchProvider } : {}),
+  });
   const direct = searchResults[0];
   const selected: SelectedNode[] = [];
   const selectedIds = new Set<string>();
@@ -36,7 +44,7 @@ export function resolveTask(
       direct.node,
       preferredDepth(direct.node, options.budgetTokens),
       `Direct match for task. ${direct.reason}.`,
-      direct.score,
+      direct,
     );
   }
 
@@ -158,7 +166,7 @@ function addSelected(
   node: SkillNode,
   depth: ContextDepth,
   reason: string,
-  score?: number,
+  score?: number | SearchResult,
 ): void {
   if (selectedIds.has(node.id)) {
     return;
@@ -172,16 +180,19 @@ function selectedNode(
   node: SkillNode,
   depth: ContextDepth,
   reason: string,
-  score?: number,
+  score?: number | SearchResult,
 ): SelectedNode {
   const layer = depth === "l4" ? node.contextLayers.l4?.[0] : node.contextLayers[depth];
+  const scoreValue = typeof score === "number" ? score : score?.score;
+  const scoreProvider = typeof score === "number" ? undefined : score?.provider;
 
   return {
     node: node.id,
     depth: layer?.depth ?? "l0",
     status: statusFor(node),
     reason,
-    score,
+    score: scoreValue,
+    scoreProvider,
     source: node.source.url ?? node.source.path,
     tokenEstimate: layer?.tokenEstimate ?? 0,
   };

@@ -72,7 +72,7 @@ Recommended stack:
 - Markdown and frontmatter parsing: `gray-matter`.
 - YAML parsing: `yaml`.
 - Local search v0.1: deterministic lexical scorer.
-- Local search v0.2: BM25 provider, likely `minisearch`.
+- Local search v0.2: BM25 provider using `minisearch`.
 - Semantic search v0.3+: optional embeddings provider behind the same retrieval interface.
 - Tests: `vitest`.
 - Package manager: `npm` unless the implementation chooses a workspace-oriented alternative.
@@ -270,6 +270,13 @@ BM25 should retrieve candidate nodes. SkillGraph-specific resolver behavior shou
 - missing remote skill explanation.
 
 This keeps BM25 as retrieval, not as the whole product brain.
+
+Current implementation status:
+
+- `skillgraph search` defaults to BM25.
+- `--strategy lexical` keeps the deterministic scorer available for comparison.
+- Search results include provider provenance, matched fields, matched terms, and an explanation.
+- Resolver-selected direct matches include `scoreProvider` so downstream tools can explain where the score came from.
 
 ### v0.3: Persistent and Unified Retrieval
 

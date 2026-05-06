@@ -29,8 +29,8 @@ Use this skill when a task could benefit from specialized agent skills, especial
 ## Commands
 
 - `skillgraph index`: scan local skill roots and write `.skillgraph/index.json`.
-- `skillgraph search "<query>"`: search the local graph.
-- `skillgraph resolve "<task>"`: return selected nodes, context depths, frontier nodes, conflicts, missing nodes, and reasons.
+- `skillgraph search "<query>"`: search the local graph with BM25 by default; use `--strategy lexical` only when comparing against the deterministic baseline.
+- `skillgraph resolve "<task>"`: return selected nodes, context depths, frontier nodes, conflicts, missing nodes, scoring provider provenance, and reasons.
 - `skillgraph expand <node-id> --depth <depth>`: load deeper context for one node.
 - `skillgraph explain --last`: explain the last resolution path.
 - `skillgraph install <node-id>`: dry-run remote install guidance only in v0.1.

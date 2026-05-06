@@ -45,6 +45,20 @@ describe("skillgraph CLI", () => {
     ]);
     const searchJson = JSON.parse(searchResult.stdout);
     expect(searchJson.results[0].node.id).toBe("frontend-design");
+    expect(searchJson.results[0].provider).toBe("bm25");
+
+    const lexicalSearchResult = await execFileAsync(process.execPath, [
+      tsx,
+      ...commonArgs,
+      "search",
+      "frontend polish",
+      "--strategy",
+      "lexical",
+      "--format",
+      "json",
+    ]);
+    const lexicalSearchJson = JSON.parse(lexicalSearchResult.stdout);
+    expect(lexicalSearchJson.results[0].provider).toBe("lexical");
 
     const resolveResult = await execFileAsync(process.execPath, [
       tsx,

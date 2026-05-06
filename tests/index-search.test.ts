@@ -31,11 +31,32 @@ describe("indexSkills and searchSkills", () => {
       now: "2026-05-06T00:00:00.000Z",
     });
 
-    const results = searchSkills(graph, "frontend polish production ui");
+    const results = searchSkills(graph, "frontend polish production ui", {
+      provider: "lexical",
+    });
 
     expect(results[0]?.node.id).toBe("frontend-design");
     expect(results[0]?.score).toBeGreaterThan(results[1]?.score ?? 0);
     expect(results[0]?.reason).toContain("frontend");
+    expect(results[0]?.provider).toBe("lexical");
+  });
+
+  it("uses BM25 search by default with field-level match explanations", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const results = searchSkills(graph, "visual regression screenshots");
+
+    expect(results[0]?.node.id).toBe("visual-qa");
+    expect(results[0]?.provider).toBe("bm25");
+    expect(results[0]?.matchedFields).toEqual(
+      expect.arrayContaining(["description", "tags"]),
+    );
+    expect(results[0]?.reason).toContain("BM25");
   });
 
   it("does not return installed skills that have no lexical match", async () => {
@@ -46,7 +67,9 @@ describe("indexSkills and searchSkills", () => {
       now: "2026-05-06T00:00:00.000Z",
     });
 
-    const results = searchSkills(graph, "postgres database migration");
+    const results = searchSkills(graph, "postgres database migration", {
+      provider: "lexical",
+    });
 
     expect(results).toEqual([]);
   });
@@ -59,7 +82,9 @@ describe("indexSkills and searchSkills", () => {
       now: "2026-05-06T00:00:00.000Z",
     });
 
-    const results = searchSkills(graph, "the and for with");
+    const results = searchSkills(graph, "the and for with", {
+      provider: "lexical",
+    });
 
     expect(results).toEqual([]);
   });
@@ -72,7 +97,9 @@ describe("indexSkills and searchSkills", () => {
       now: "2026-05-06T00:00:00.000Z",
     });
 
-    const results = searchSkills(graph, "production-ready polished dashboard");
+    const results = searchSkills(graph, "production-ready polished dashboard", {
+      provider: "lexical",
+    });
 
     expect(results[0]?.node.id).toBe("frontend-design");
     expect(results[0]?.reason).toContain("polish");

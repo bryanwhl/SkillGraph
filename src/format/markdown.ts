@@ -11,7 +11,7 @@ export function formatSearchMarkdown(results: SearchResult[]): string {
     "",
     ...results.map(
       (result, index) =>
-        `${index + 1}. ${result.node.id} (${result.score.toFixed(1)}): ${result.reason}`,
+        `${index + 1}. ${result.node.id} (${result.provider}, ${result.score.toFixed(1)}): ${result.reason}`,
     ),
   ].join("\n")}\n`;
 }

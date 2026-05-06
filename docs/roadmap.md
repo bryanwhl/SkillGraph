@@ -31,6 +31,8 @@ Success criteria:
 
 ## Phase 1.5: Search Quality Foundation
 
+Status: implemented.
+
 Goal: make retrieval quality measurable before replacing the first deterministic scorer.
 
 Scope:
@@ -47,6 +49,8 @@ Success criteria:
 - The resolver can consume candidates from a provider abstraction instead of depending on one scoring implementation.
 
 ## Phase 1.6: BM25 Local Search
+
+Status: implemented for local graph search.
 
 Goal: improve local lexical ranking while keeping search explainable and offline.
 

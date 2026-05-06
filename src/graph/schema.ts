@@ -96,6 +96,7 @@ export const selectedNodeSchema = z.object({
   status: z.enum(["local", "remote", "virtual"]),
   reason: z.string(),
   score: z.number().optional(),
+  scoreProvider: z.enum(["lexical", "bm25", "semantic", "hybrid"]).optional(),
   source: z.string().optional(),
   tokenEstimate: z.number().int().nonnegative(),
 });

@@ -374,6 +374,8 @@ Retrieval should roll out in phases:
 
 Semantic retrieval must be optional and must respect the privacy requirements in section 14.2.
 
+Current implementation: BM25 is the default local retrieval strategy for `search` and `resolve`, with deterministic lexical retrieval still available as a baseline strategy.
+
 ### 13.4 Installation
 
 The system must:

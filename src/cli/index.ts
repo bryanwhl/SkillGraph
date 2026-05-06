@@ -2,7 +2,11 @@
 import { Command } from "commander";
 import { expandNode, type ExpandDepth } from "../resolver/expand.js";
 import { explainResolution, resolveTask } from "../resolver/plan.js";
-import { searchSkills } from "../resolver/retrieve.js";
+import {
+  SEARCH_PROVIDER_NAMES,
+  type SearchProviderName,
+  searchSkills,
+} from "../resolver/retrieve.js";
 import { indexSkills } from "../graph/builder.js";
 import {
   loadGraph,
@@ -22,7 +26,7 @@ const program = new Command();
 program
   .name("skillgraph")
   .description("Local-first skill graph resolver for AI agent skills")
-  .version("0.1.0")
+  .version("0.2.0")
   .option("--cwd <path>", "workspace directory")
   .option("--skill-root <path>", "skill root to index", collectOption, [])
   .option("--graph <path>", "manual skillgraph YAML file", collectOption, []);
@@ -48,13 +52,20 @@ program
   .argument("<query>", "search query")
   .option("--format <format>", "json or markdown", "markdown")
   .option("--limit <number>", "maximum result count", parseInteger, 10)
-  .action(async (query: string, options: { format: string; limit: number }) => {
+  .option("--strategy <strategy>", "search strategy: bm25 or lexical", "bm25")
+  .action(async (
+    query: string,
+    options: { format: string; limit: number; strategy: string },
+  ) => {
     const runtime = runtimeOptions(program.opts());
     const graph = await loadGraph(runtime.cwd);
-    const results = searchSkills(graph, query, options.limit);
+    const results = searchSkills(graph, query, {
+      limit: options.limit,
+      provider: parseSearchProvider(options.strategy),
+    });
     writeOutput(
       options.format,
-      { query, results },
+      { query, strategy: parseSearchProvider(options.strategy), results },
       () => formatSearchMarkdown(results),
     );
   });
@@ -66,10 +77,11 @@ program
   .option("--agent <agent>", "agent runtime", "codex")
   .option("--budget <tokens>", "token budget", parseInteger, 4000)
   .option("--format <format>", "json or markdown", "markdown")
+  .option("--strategy <strategy>", "search strategy: bm25 or lexical", "bm25")
   .action(
     async (
       task: string,
-      options: { agent: string; budget: number; format: string },
+      options: { agent: string; budget: number; format: string; strategy: string },
     ) => {
       const runtime = runtimeOptions(program.opts());
       const graph = await loadGraph(runtime.cwd);
@@ -77,6 +89,7 @@ program
         task,
         agent: options.agent,
         budgetTokens: options.budget,
+        searchProvider: parseSearchProvider(options.strategy),
       });
       await saveLastResolution(runtime.cwd, resolution);
       writeOutput(
@@ -137,6 +150,15 @@ function parseInteger(value: string): number {
     throw new Error(`Expected integer, received ${value}`);
   }
   return parsed;
+}
+
+function parseSearchProvider(value: string): SearchProviderName {
+  if ((SEARCH_PROVIDER_NAMES as readonly string[]).includes(value)) {
+    return value as SearchProviderName;
+  }
+  throw new Error(
+    `Expected search strategy to be one of ${SEARCH_PROVIDER_NAMES.join(", ")}, received ${value}`,
+  );
 }
 
 function writeOutput<T>(
