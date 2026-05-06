@@ -20,11 +20,17 @@ Use this skill when a task could benefit from specialized agent skills, especial
 4. Expand only nodes justified by new evidence:
 
    ```bash
+   skillgraph expand <node-id> --depth summary
+   ```
+
+5. Expand to full context only when the summary is insufficient:
+
+   ```bash
    skillgraph expand <node-id> --depth full
    ```
 
-5. Ask before installing any remote skill.
-6. At the end, report which nodes were loaded and which frontier nodes were skipped.
+6. Ask before installing any remote skill.
+7. At the end, report which nodes were loaded and which frontier nodes were skipped.
 
 ## Commands
 

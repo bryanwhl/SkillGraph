@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { buildOperationalSummary } from "../context/operational-summary.js";
 import { estimateTokens } from "../context/token-estimate.js";
 import { type SkillNode, skillNodeSchema } from "../graph/schema.js";
 import { slugify, tokenize, unique } from "../shared/strings.js";
@@ -97,6 +98,14 @@ export function skillsShResultToNode(
     `Source: ${result.url}`,
     `Install after human approval: \`${result.installCommand}\``,
   ].join("\n");
+  const l2Content = buildOperationalSummary({
+    title: result.name,
+    description,
+    tags,
+    capabilities: [capability],
+    source: result.url,
+    installCommand: result.installCommand,
+  });
 
   return skillNodeSchema.parse({
     id: result.id,
@@ -129,6 +138,12 @@ export function skillsShResultToNode(
         label: "remote capability card",
         tokenEstimate: estimateTokens(l1Content),
         content: l1Content,
+      },
+      l2: {
+        depth: "l2",
+        label: "operational summary",
+        tokenEstimate: estimateTokens(l2Content),
+        content: l2Content,
       },
     },
     provenance: {

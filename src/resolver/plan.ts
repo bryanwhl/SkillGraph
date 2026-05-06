@@ -54,11 +54,11 @@ export function resolveTask(
   );
 
   while (estimatedTokens > options.budgetTokens && selected.length > 0) {
-    const fullIndex = selected.findIndex((item) => item.depth === "l3");
-    if (fullIndex < 0) {
+    const downgradeIndex = firstDowngradeCandidateIndex(selected);
+    if (downgradeIndex < 0) {
       break;
     }
-    const downgraded = selected[fullIndex];
+    const downgraded = selected[downgradeIndex];
     if (!downgraded) {
       break;
     }
@@ -66,10 +66,14 @@ export function resolveTask(
     if (!node) {
       break;
     }
-    selected[fullIndex] = selectedNode(
+    const nextDepth = nextLowerDepth(node, downgraded.depth);
+    if (!nextDepth || nextDepth === downgraded.depth) {
+      break;
+    }
+    selected[downgradeIndex] = selectedNode(
       node,
-      "l1",
-      `${downgraded.reason} Downgraded to capability-card depth to respect token budget.`,
+      nextDepth,
+      `${downgraded.reason} Downgraded to ${contextDepthLabel(nextDepth)} depth to respect token budget.`,
       downgraded.score,
     );
     estimatedTokens = selected.reduce((sum, item) => sum + item.tokenEstimate, 0);
@@ -122,6 +126,17 @@ export function resolveTask(
         : `No matching skills found for ${options.task}.`,
     createdAt: options.now ?? new Date().toISOString(),
   });
+}
+
+function firstDowngradeCandidateIndex(selected: SelectedNode[]): number {
+  const depths: ContextDepth[] = ["l3", "l2", "l1"];
+  for (const depth of depths) {
+    const index = selected.findIndex((item) => item.depth === depth);
+    if (index >= 0) {
+      return index;
+    }
+  }
+  return -1;
 }
 
 export function explainResolution(resolution: Resolution): string {
@@ -233,7 +248,36 @@ function preferredDepth(node: SkillNode, budgetTokens: number): ContextDepth {
   if (node.status.installed && node.contextLayers.l3 && fullCost <= budgetTokens) {
     return "l3";
   }
+  if (node.contextLayers.l2) {
+    return "l2";
+  }
   return node.contextLayers.l1 ? "l1" : "l0";
+}
+
+function nextLowerDepth(
+  node: SkillNode,
+  currentDepth: ContextDepth,
+): ContextDepth | undefined {
+  if (currentDepth === "l3" && node.contextLayers.l2) {
+    return "l2";
+  }
+  if ((currentDepth === "l3" || currentDepth === "l2") && node.contextLayers.l1) {
+    return "l1";
+  }
+  if ((currentDepth === "l2" || currentDepth === "l1") && node.contextLayers.l0) {
+    return "l0";
+  }
+  return undefined;
+}
+
+function contextDepthLabel(depth: ContextDepth): string {
+  if (depth === "l2") {
+    return "operational-summary";
+  }
+  if (depth === "l1") {
+    return "capability-card";
+  }
+  return depth;
 }
 
 function statusFor(node: SkillNode): GraphNodeStatus {

@@ -38,6 +38,9 @@ describe("parseSkillFile", () => {
     });
     expect(node.contextLayers.l0.content).toContain("frontend-design");
     expect(node.contextLayers.l1?.content).toContain("Improve UI visual quality");
+    expect(node.contextLayers.l2?.label).toBe("operational summary");
+    expect(node.contextLayers.l2?.content).toContain("## Operational Summary");
+    expect(node.contextLayers.l2?.content).toContain("visual_hierarchy");
     expect(node.contextLayers.l3?.contentRef).toBe(filePath);
   });
 });

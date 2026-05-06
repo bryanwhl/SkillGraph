@@ -2,6 +2,7 @@ import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { parse } from "yaml";
 import { parseSkillFile } from "../adapters/skill-parser.js";
+import { buildOperationalSummary } from "../context/operational-summary.js";
 import { estimateTokens } from "../context/token-estimate.js";
 import {
   type SkillEdge,
@@ -161,6 +162,15 @@ function manualNodeToSkillNode(node: ManualNode, indexedAt: string): SkillNode {
   const description = node.description ?? "";
   const l0Content = `${name}: ${description}`.trim();
   const sourceType = node.source?.type ?? "manual";
+  const summarySource = node.source?.url ?? node.source?.path;
+  const l1Content = [`# ${node.title ?? name}`, description].filter(Boolean).join("\n\n");
+  const l2Content = buildOperationalSummary({
+    title: node.title ?? name,
+    description,
+    tags: node.tags ?? [],
+    capabilities: node.capabilities ?? [],
+    ...(summarySource ? { source: summarySource } : {}),
+  });
 
   return skillNodeSchema.parse({
     id: node.id,
@@ -193,8 +203,14 @@ function manualNodeToSkillNode(node: ManualNode, indexedAt: string): SkillNode {
       l1: {
         depth: "l1",
         label: "capability card",
-        tokenEstimate: estimateTokens([`# ${node.title ?? name}`, description].join("\n\n")),
-        content: [`# ${node.title ?? name}`, description].filter(Boolean).join("\n\n"),
+        tokenEstimate: estimateTokens(l1Content),
+        content: l1Content,
+      },
+      l2: {
+        depth: "l2",
+        label: "operational summary",
+        tokenEstimate: estimateTokens(l2Content),
+        content: l2Content,
       },
     },
     provenance: {

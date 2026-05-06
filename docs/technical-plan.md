@@ -354,7 +354,14 @@ The first implementation should support:
 - `l3`: full `SKILL.md`.
 - `l4`: referenced files, scripts, examples, templates, or assets.
 
-For version `0.1`, `l0`, `l1`, and `l3` are sufficient for launch. `l2` and `l4` can be partial or deferred.
+Current implementation:
+
+- `l0`: metadata.
+- `l1`: deterministic capability card.
+- `l2`: deterministic operational summary.
+- `l3`: full installed `SKILL.md` context.
+
+`l4` referenced artifacts remain deferred. Budget downgrades prefer `l2` before falling back to `l1`.
 
 ## Build Slices
 

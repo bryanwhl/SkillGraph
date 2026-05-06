@@ -115,12 +115,14 @@ Success criteria:
 
 ## Phase 3: Progressive Context Layers
 
+Status: partially implemented for deterministic `l2` operational summaries and budget-aware downgrades.
+
 Goal: formalize depth-based loading.
 
 Scope:
 
 - Generate capability cards.
-- Generate operational summaries.
+- Generate deterministic operational summaries.
 - Estimate token cost.
 - Track loaded layers.
 - Avoid duplicate context.
@@ -129,6 +131,11 @@ Success criteria:
 
 - Resolver can stay under a token budget.
 - Agent can expand deeper nodes only when needed.
+
+Remaining work:
+
+- Track loaded layers across multi-step agent sessions.
+- Add `l4` referenced artifacts for scripts, examples, templates, and assets.
 
 ## Phase 4: Semantic and Hybrid Retrieval
 

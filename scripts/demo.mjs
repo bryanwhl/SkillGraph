@@ -50,7 +50,10 @@ try {
     "1800",
   ]);
 
-  section("Expand the selected frontend-design skill");
+  section("Expand the selected frontend-design summary");
+  run([...baseArgs, "expand", "frontend-design", "--depth", "summary"]);
+
+  section("Expand the selected frontend-design full skill");
   run([...baseArgs, "expand", "frontend-design", "--depth", "full"]);
 
   section("Explain the last resolution");

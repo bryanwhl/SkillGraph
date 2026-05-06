@@ -93,7 +93,7 @@ Run the built-in demo:
 npm run demo
 ```
 
-The demo indexes example skills, searches the graph, resolves a local frontend task, expands a full skill, explains the saved resolution, and shows the approval-required path for a remote accessibility skill.
+The demo indexes example skills, searches the graph, caches remote candidates, resolves a local frontend task, expands summary and full context, explains the saved resolution, and shows the approval-required path for a remote accessibility skill.
 
 ## CLI Commands
 
@@ -102,7 +102,7 @@ The demo indexes example skills, searches the graph, resolves a local frontend t
 - `skillgraph remote-cache "<query>"`: searches skills.sh through the official Skills CLI, caches metadata under `.skillgraph/cache/`, and prints approval-required install commands.
 - `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline.
 - `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
-- `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available.
+- `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available. `summary` maps to the deterministic `l2` operational summary.
 - `skillgraph explain --last`: renders the previous resolution from `.skillgraph/last-resolution.json`.
 - `skillgraph install <node-id>`: v0.1 dry-run guidance for approval-required remote installs.
 
@@ -125,6 +125,7 @@ The test suite covers:
 - skills.sh CLI output parsing and remote candidate normalization.
 - Retrieval relevance regression fixtures.
 - Resolver planning, ancestors, frontier nodes, conflicts, and token budgets.
+- Progressive context summaries and budget downgrades.
 - Context expansion.
 - End-to-end CLI behavior over fixture skills.
 

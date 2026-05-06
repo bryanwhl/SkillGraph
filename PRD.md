@@ -398,6 +398,8 @@ The system must:
 - Avoid reloading duplicate content.
 - Respect a token budget.
 
+Current implementation: indexed nodes include deterministic `L2` operational summaries, and resolver budget downgrades prefer `L2` before falling back to `L1`.
+
 ### 13.6 Compatibility
 
 The system should support:

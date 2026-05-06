@@ -92,6 +92,29 @@ describe("resolveTask and expandNode", () => {
     expect(full.content).toContain("# Frontend Design");
   });
 
+  it("expands deterministic operational summaries and uses them under tighter budgets", async () => {
+    const graph = await indexSkills({
+      cwd: fixturePath(),
+      skillRoots: [fixturePath("skills")],
+      graphFiles: [fixturePath("skillgraph.yaml")],
+      now: "2026-05-06T00:00:00.000Z",
+    });
+
+    const summary = await expandNode(graph, "frontend-design", "summary");
+    const resolution = resolveTask(graph, {
+      task: "Make this frontend dashboard polished and production-ready",
+      agent: "codex",
+      budgetTokens: 140,
+    });
+
+    expect(summary.depth).toBe("l2");
+    expect(summary.content).toContain("## Operational Summary");
+    expect(resolution.selected.find((item) => item.node === "frontend-design"))
+      .toMatchObject({
+        depth: "l2",
+      });
+  });
+
   it("formats explainable Markdown from the last resolution", async () => {
     const graph = await indexSkills({
       cwd: fixturePath(),

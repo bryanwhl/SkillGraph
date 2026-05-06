@@ -85,5 +85,6 @@ describe("skills.sh adapter", () => {
     expect(node.contextLayers.l1?.content).toContain(
       "npx skills add vercel-labs/agent-skills --skill frontend-design",
     );
+    expect(node.contextLayers.l2?.content).toContain("## Operational Summary");
   });
 });

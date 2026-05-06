@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
+import { buildOperationalSummary } from "../context/operational-summary.js";
 import { estimateTokens } from "../context/token-estimate.js";
 import { type SkillNode, type SourceType, skillNodeSchema } from "../graph/schema.js";
 import { slugify, titleFromMarkdown, unique } from "../shared/strings.js";
@@ -41,6 +42,13 @@ export async function parseSkillFile(
     tags,
     capabilities,
   });
+  const l2Content = buildOperationalSummary({
+    title,
+    description,
+    tags,
+    capabilities,
+    markdown: parsed.content,
+  });
 
   const node: SkillNode = {
     id,
@@ -73,6 +81,12 @@ export async function parseSkillFile(
         label: "capability card",
         tokenEstimate: estimateTokens(l1Content),
         content: l1Content,
+      },
+      l2: {
+        depth: "l2",
+        label: "operational summary",
+        tokenEstimate: estimateTokens(l2Content),
+        content: l2Content,
       },
       l3: {
         depth: "l3",
