@@ -25,7 +25,7 @@ Scope:
 
 Success criteria:
 
-- A user can run `skillgraph resolve "make this frontend polished"`.
+- A user can run `skill-graph resolve "make this frontend polished"`.
 - Resolver returns a useful plan with ancestors, candidate skills, and frontier nodes.
 - Agent can read selected context without installing anything new.
 
@@ -59,8 +59,8 @@ Scope:
 - Add a BM25-backed local search provider, likely using MiniSearch.
 - Index skill name, description, tags, capabilities, trigger phrases, and source metadata.
 - Apply field boosts, with names and tags weighted above descriptions.
-- Preserve SkillGraph-specific post-processing for installed status, graph neighbors, conflicts, context depth, and explanation.
-- Persist or rebuild the local search index under `.skillgraph/` as appropriate for CLI performance.
+- Preserve skill-graph-specific post-processing for installed status, graph neighbors, conflicts, context depth, and explanation.
+- Persist or rebuild the local search index under `.skill-graph/` as appropriate for CLI performance.
 
 Success criteria:
 
@@ -161,11 +161,12 @@ Success criteria:
 
 Current implementation:
 
-- `skillgraph embeddings index` builds `.skillgraph/embeddings.json`.
+- `skill-graph embeddings index` builds `.skill-graph/embeddings.json`.
 - `qwen3-local` is the default real local embedding provider and uses `Qwen/Qwen3-Embedding-0.6B` through `sentence-transformers`.
 - `deterministic` is a test and demo provider that avoids model downloads.
-- `skillgraph search --strategy semantic` ranks saved vectors by cosine similarity.
-- `skillgraph search --strategy hybrid` fuses BM25, lexical, and semantic results when embeddings exist.
+- Model repository code execution is disabled unless the user explicitly passes `--trust-remote-code`.
+- `skill-graph search --strategy semantic` ranks saved vectors by cosine similarity.
+- `skill-graph search --strategy hybrid` fuses BM25, lexical, and semantic results when embeddings exist.
 - Saved embeddings are checked against current normalized node text; direct semantic search asks for a rebuild when stale, while hybrid skips stale semantic results.
 - No remote embedding upload path is implemented.
 
@@ -173,7 +174,7 @@ Remaining work:
 
 - Add model installation documentation and hardware notes after dogfooding on common developer machines.
 - Add semantic relevance fixtures that demonstrate conceptual matches BM25 misses.
-- Evaluate smaller and larger embedding model choices against SkillGraph-specific relevance fixtures.
+- Evaluate smaller and larger embedding model choices against skill-graph-specific relevance fixtures.
 
 ## Phase 4.5: Edge Inference
 
@@ -195,11 +196,11 @@ Success criteria:
 
 Current implementation:
 
-- `skillgraph edges suggest` reads the saved local embedding index and proposes candidate edges.
+- `skill-graph edges suggest` reads the saved local embedding index and proposes candidate edges.
 - Suggestions include `from`, `to`, proposed edge `type`, confidence, reason, `source.kind: inferred`, `source.method: embedding_similarity`, and `reviewStatus: proposed`.
 - Existing graph edges are skipped so suggestions focus on missing relationships.
 - Stale embedding indexes are rejected with rebuild guidance.
-- Suggestions are output only; they do not mutate `.skillgraph/index.json` or `skillgraph.yaml`.
+- Suggestions are output only; they do not mutate `.skill-graph/index.json` or `skill-graph.yaml`.
 
 Remaining work:
 
@@ -240,7 +241,7 @@ Success criteria:
 
 ## Phase 7: Team and Organization Support
 
-Goal: make SkillGraph useful for teams.
+Goal: make skill-graph useful for teams.
 
 Scope:
 

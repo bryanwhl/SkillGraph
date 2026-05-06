@@ -1,7 +1,7 @@
 import {
   type LoadedContextEntry,
   type Resolution,
-  type SkillGraph,
+  type GraphIndex,
 } from "../graph/schema.js";
 import { type SkillsShSearchResult } from "../adapters/skills-sh.js";
 import { type EdgeSuggestion } from "../graph/edge-suggestions.js";
@@ -13,7 +13,7 @@ export function formatSearchMarkdown(results: SearchResult[]): string {
   }
 
   return `${[
-    "# SkillGraph Search",
+    "# skill-graph Search",
     "",
     ...results.map(
       (result, index) =>
@@ -24,7 +24,7 @@ export function formatSearchMarkdown(results: SearchResult[]): string {
 
 export function formatResolutionMarkdown(resolution: Resolution): string {
   const lines = [
-    "# SkillGraph Resolution",
+    "# skill-graph Resolution",
     "",
     `Task: ${resolution.task}`,
     `Token budget: ${resolution.budget.estimatedTokens}/${resolution.budget.requestedTokens}`,
@@ -57,7 +57,7 @@ export function formatResolutionMarkdown(resolution: Resolution): string {
   return `${lines.join("\n")}\n`;
 }
 
-export function formatIndexSummary(graph: SkillGraph): string {
+export function formatIndexSummary(graph: GraphIndex): string {
   return `Indexed ${graph.nodes.length} nodes and ${graph.edges.length} edges.\n`;
 }
 
@@ -69,7 +69,7 @@ export function formatEdgeSuggestionsMarkdown(
   }
 
   return `${[
-    "# SkillGraph Edge Suggestions",
+    "# skill-graph Edge Suggestions",
     "",
     ...suggestions.map(
       (suggestion, index) =>
@@ -86,7 +86,7 @@ export function formatSkillsShSearchMarkdown(
   }
 
   return `${[
-    "# SkillGraph Remote Cache",
+    "# skill-graph Remote Cache",
     "",
     ...results.map((result, index) => {
       const installs =
@@ -106,7 +106,7 @@ export function formatLoadedContextMarkdown(
   }
 
   return `${[
-    "# SkillGraph Loaded Context",
+    "# skill-graph Loaded Context",
     "",
     ...loaded.map(
       (entry, index) =>

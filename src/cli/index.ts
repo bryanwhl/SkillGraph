@@ -53,12 +53,12 @@ import { collectOption, runtimeOptions } from "./options.js";
 const program = new Command();
 
 program
-  .name("skillgraph")
+  .name("skill-graph")
   .description("Local-first skill graph resolver for AI agent skills")
   .version("0.4.0")
   .option("--cwd <path>", "workspace directory")
   .option("--skill-root <path>", "skill root to index", collectOption, [])
-  .option("--graph <path>", "manual skillgraph YAML file", collectOption, []);
+  .option("--graph <path>", "manual skill-graph YAML file", collectOption, []);
 
 program
   .command("index")
@@ -133,11 +133,13 @@ embeddings
   .option("--provider <provider>", "embedding provider: qwen3-local or deterministic", "qwen3-local")
   .option("--model <model>", "embedding model id", DEFAULT_QWEN3_EMBEDDING_MODEL)
   .option("--dimensions <number>", "deterministic provider dimensions", parseInteger, 128)
+  .option("--trust-remote-code", "allow the local model loader to execute model repository code", false)
   .option("--format <format>", "json or markdown", "markdown")
   .action(async (options: {
     provider: string;
     model: string;
     dimensions: number;
+    trustRemoteCode: boolean;
     format: string;
   }) => {
     const runtime = runtimeOptions(program.opts());
@@ -146,6 +148,7 @@ embeddings
     const provider = embeddingProviderForName(providerName, {
       model: options.model,
       dimensions: options.dimensions,
+      trustRemoteCode: options.trustRemoteCode,
     });
     const index = await buildEmbeddingIndex(graph, {
       provider,
@@ -177,7 +180,7 @@ embeddings
       index,
       () =>
         [
-          "# SkillGraph Embeddings",
+          "# skill-graph Embeddings",
           "",
           `Provider: ${index.provider}`,
           `Model: ${index.model}`,
@@ -456,7 +459,7 @@ async function semanticResultsForRuntime(
   if (!freshness.fresh) {
     if (requireIndex) {
       throw new Error(
-        `Semantic embedding index is stale (${freshness.reason}). Run \`skillgraph embeddings index\` again.`,
+        `Semantic embedding index is stale (${freshness.reason}). Run \`skill-graph embeddings index\` again.`,
       );
     }
     return [];

@@ -2,8 +2,8 @@
 node_modules/
 .env
 .env.*
-skillgraph.cache/
-.skillgraph/
+skill-graph.cache/
+.skill-graph/
 dist/
 coverage/
 

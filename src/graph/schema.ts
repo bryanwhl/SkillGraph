@@ -82,13 +82,13 @@ export const skillEdgeSchema = z.object({
 });
 export type SkillEdge = z.infer<typeof skillEdgeSchema>;
 
-export const skillGraphSchema = z.object({
+export const graphIndexSchema = z.object({
   version: z.literal(1),
   indexedAt: z.string(),
   nodes: z.array(skillNodeSchema),
   edges: z.array(skillEdgeSchema),
 });
-export type SkillGraph = z.infer<typeof skillGraphSchema>;
+export type GraphIndex = z.infer<typeof graphIndexSchema>;
 
 export const selectedNodeSchema = z.object({
   node: z.string(),

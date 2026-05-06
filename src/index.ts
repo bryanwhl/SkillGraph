@@ -30,7 +30,7 @@ export type {
   ContextLayer,
   Resolution,
   SkillEdge,
-  SkillGraph,
+  GraphIndex,
   SkillNode,
 } from "./graph/schema.js";
 export type { SearchProviderName, SearchResult } from "./resolver/retrieve.js";

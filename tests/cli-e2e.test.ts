@@ -8,11 +8,11 @@ import { fixturePath, repoRoot } from "./support/paths.js";
 
 const execFileAsync = promisify(execFile);
 
-describe("skillgraph CLI", () => {
+describe("skill-graph CLI", () => {
   let cwd: string;
 
   beforeEach(async () => {
-    cwd = await mkdtemp(path.join(tmpdir(), "skillgraph-cli-"));
+    cwd = await mkdtemp(path.join(tmpdir(), "skill-graph-cli-"));
   });
 
   afterEach(async () => {
@@ -29,7 +29,7 @@ describe("skillgraph CLI", () => {
       "--skill-root",
       fixturePath("skills"),
       "--graph",
-      fixturePath("skillgraph.yaml"),
+      fixturePath("skill-graph.yaml"),
     ];
 
     const indexResult = await execFileAsync(process.execPath, [tsx, ...commonArgs, "index"]);

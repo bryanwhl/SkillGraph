@@ -1,12 +1,12 @@
 # Technical Plan
 
-This document defines the first launch-ready implementation plan for SkillGraph.
+This document defines the first launch-ready implementation plan for skill-graph.
 
 The first version should prove the product thesis with a local-first CLI and an agent skill. It should not require hosted infrastructure, user accounts, background sync, or automatic remote installs.
 
 ## Launch Goal
 
-Build `skillgraph` as a local command-line tool that can:
+Build `skill-graph` as a local command-line tool that can:
 
 - Index locally installed agent skills.
 - Search indexed skills.
@@ -20,14 +20,14 @@ Build `skillgraph` as a local command-line tool that can:
 The first useful launch should make this flow work:
 
 ```bash
-skillgraph index
-skillgraph search "frontend design"
-skillgraph embeddings index --provider qwen3-local
-skillgraph search "visual screenshots review" --strategy semantic
-skillgraph edges suggest
-skillgraph resolve "make this React dashboard production-ready" --format markdown
-skillgraph expand frontend-design --depth full
-skillgraph explain --last
+skill-graph index
+skill-graph search "frontend design"
+skill-graph embeddings index --provider qwen3-local
+skill-graph search "visual screenshots review" --strategy semantic
+skill-graph edges suggest
+skill-graph resolve "make this React dashboard production-ready" --format markdown
+skill-graph expand frontend-design --depth full
+skill-graph explain --last
 ```
 
 ## Product Boundary
@@ -84,7 +84,7 @@ Recommended stack:
 - Semantic search v0.3+: optional embeddings provider behind the same retrieval interface.
 - Tests: `vitest`.
 - Package manager: `npm` unless the implementation chooses a workspace-oriented alternative.
-- Initial graph store: JSON files under `.skillgraph/`.
+- Initial graph store: JSON files under `.skill-graph/`.
 - Later graph store option: SQLite, if search, migrations, or cache behavior outgrow JSON.
 
 ## Local State
@@ -92,7 +92,7 @@ Recommended stack:
 The initial implementation should write project-local state by default:
 
 ```text
-.skillgraph/
+.skill-graph/
   index.json
   edges.json
   last-resolution.json
@@ -105,9 +105,9 @@ The initial implementation should write project-local state by default:
 
 `edges.json` stores manual and heuristic graph edges.
 
-`last-resolution.json` stores the latest resolver output for `skillgraph explain --last`.
+`last-resolution.json` stores the latest resolver output for `skill-graph explain --last`.
 
-`loaded-context.json` stores context layers expanded through `skillgraph expand`.
+`loaded-context.json` stores context layers expanded through `skill-graph expand`.
 
 `embeddings.json` stores optional local semantic vectors with provider, model, dimensions, timestamps, graph timestamp, source hashes, and vector metadata.
 
@@ -157,7 +157,7 @@ The current remote adapter shells out to the official Skills CLI:
 npx skills find "<query>"
 ```
 
-SkillGraph parses the CLI output, caches remote metadata under `.skillgraph/cache/`, converts candidates into remote graph nodes, and keeps install commands dry-run and approval-required.
+skill-graph parses the CLI output, caches remote metadata under `.skill-graph/cache/`, converts candidates into remote graph nodes, and keeps install commands dry-run and approval-required.
 
 ## Core Data Model
 
@@ -282,7 +282,7 @@ Suggested searchable fields:
 - `triggerPhrases`, medium boost when available;
 - `source` metadata, low boost or filter-only.
 
-BM25 should retrieve candidate nodes. SkillGraph-specific resolver behavior should remain separate:
+BM25 should retrieve candidate nodes. skill-graph-specific resolver behavior should remain separate:
 
 - installed/local preference;
 - graph ancestor expansion;
@@ -295,14 +295,14 @@ This keeps BM25 as retrieval, not as the whole product brain.
 
 Current implementation status:
 
-- `skillgraph search` defaults to BM25.
+- `skill-graph search` defaults to BM25.
 - `--strategy lexical` keeps the deterministic scorer available for comparison.
 - Search results include provider provenance, matched fields, matched terms, and an explanation.
 - Resolver-selected direct matches include `scoreProvider` so downstream tools can explain where the score came from.
 
 ### v0.3: Persistent and Unified Retrieval
 
-Once BM25 works locally, persist or rebuild its index under `.skillgraph/`.
+Once BM25 works locally, persist or rebuild its index under `.skill-graph/`.
 
 Remote candidates from skills.sh should be normalized into the same searchable document shape as local skills, while keeping install approval explicit.
 
@@ -337,10 +337,11 @@ Human-in-the-loop approval is required before enabling any provider that uploads
 
 Implementation notes:
 
-- `skillgraph embeddings index` writes `.skillgraph/embeddings.json`.
+- `skill-graph embeddings index` writes `.skill-graph/embeddings.json`.
 - The default real provider is `qwen3-local`, which runs a local Python helper using `sentence-transformers` and `Qwen/Qwen3-Embedding-0.6B`.
 - `--provider deterministic` is available for tests and demos only.
-- `skillgraph search "<query>" --strategy semantic` embeds the query locally and ranks by cosine similarity against saved vectors.
+- `--trust-remote-code` is required before the Python model loader may execute model repository code.
+- `skill-graph search "<query>" --strategy semantic` embeds the query locally and ranks by cosine similarity against saved vectors.
 - Semantic search is disabled until a local embedding index exists.
 - Saved embeddings are checked against current normalized node text; direct semantic search asks for a rebuild when stale, while hybrid skips stale semantic results.
 
@@ -373,7 +374,7 @@ They should not become canonical without human review.
 
 Current implementation:
 
-- `skillgraph edges suggest` proposes review-required inferred edges from saved local embeddings.
+- `skill-graph edges suggest` proposes review-required inferred edges from saved local embeddings.
 - Suggestions include confidence, reason, inferred source provenance, and `reviewStatus: proposed`.
 - Existing graph edges are skipped.
 - Stale embedding indexes are rejected with rebuild guidance.
@@ -408,7 +409,7 @@ Build:
 - Detect local skill paths.
 - Parse `SKILL.md` files.
 - Extract frontmatter, title, description, tags, runtime compatibility, and local path.
-- Write normalized nodes to `.skillgraph/index.json`.
+- Write normalized nodes to `.skill-graph/index.json`.
 
 Human decisions:
 
@@ -419,7 +420,7 @@ Human decisions:
 
 Build:
 
-- `skillgraph search "<query>"`.
+- `skill-graph search "<query>"`.
 - Lexical ranking over names, descriptions, tags, and capabilities.
 - Markdown and JSON output.
 - Search provider boundary that can later support BM25, semantic, and hybrid retrieval.
@@ -432,13 +433,13 @@ Human decisions:
 
 Build:
 
-- `skillgraph resolve "<task>"`.
+- `skill-graph resolve "<task>"`.
 - Candidate retrieval.
 - Context depth assignment.
 - Frontier generation.
 - Conflict warnings.
 - Reasons for each selected node.
-- `.skillgraph/last-resolution.json`.
+- `.skill-graph/last-resolution.json`.
 
 Human decisions:
 
@@ -448,8 +449,8 @@ Human decisions:
 
 Build:
 
-- `skillgraph expand <node> --depth <depth>`.
-- `skillgraph explain --last`.
+- `skill-graph expand <node> --depth <depth>`.
+- `skill-graph explain --last`.
 - Full `SKILL.md` expansion for installed skills.
 - Clear Markdown output for agent consumption.
 
@@ -462,7 +463,7 @@ Human decisions:
 Build:
 
 - Create a `SKILL.md` that teaches an agent to:
-  - call `skillgraph resolve` before specialized work;
+  - call `skill-graph resolve` before specialized work;
   - load shallow context first;
   - expand nodes only when justified by task or repository evidence;
   - ask before remote installs;
@@ -480,9 +481,9 @@ Build:
 - Represent remote candidates as `installed: false`.
 - Show source URL, install command, trust indicators, and relevance reason.
 - Keep install behavior dry-run by default.
-- Support `skillgraph remote-cache "<query>"` for explicit discovery.
-- Support `skillgraph index --skills-sh-query "<query>"` to include remote candidates in local graph search and resolution.
-- Support `skillgraph install <node-id>` as graph-aware dry-run install guidance.
+- Support `skill-graph remote-cache "<query>"` for explicit discovery.
+- Support `skill-graph index --skills-sh-query "<query>"` to include remote candidates in local graph search and resolution.
+- Support `skill-graph install <node-id>` as graph-aware dry-run install guidance.
 
 Human-in-the-loop required:
 
@@ -494,12 +495,12 @@ Human-in-the-loop required:
 
 Build:
 
-- `skillgraph embeddings index`.
-- `.skillgraph/embeddings.json` with provider, model, dimensions, timestamps, graph timestamp, source hashes, and vectors.
-- `skillgraph embeddings info`.
-- `skillgraph search "<query>" --strategy semantic`.
+- `skill-graph embeddings index`.
+- `.skill-graph/embeddings.json` with provider, model, dimensions, timestamps, graph timestamp, source hashes, and vectors.
+- `skill-graph embeddings info`.
+- `skill-graph search "<query>" --strategy semantic`.
 - Hybrid fusion that adds semantic results when embeddings exist.
-- `skillgraph edges suggest` for review-required inferred relationship proposals.
+- `skill-graph edges suggest` for review-required inferred relationship proposals.
 - Deterministic embedding provider for repeatable tests and demos.
 - Local Qwen3 embedding provider for real semantic retrieval without remote uploads.
 
@@ -508,6 +509,7 @@ Human-in-the-loop required:
 - Installing Python embedding dependencies.
 - Downloading and storing local model weights.
 - Deciding whether local hardware is sufficient for the selected model.
+- Approving `--trust-remote-code` before running model repository code locally.
 - Approving any future remote embedding provider before local/private text is uploaded.
 
 ## Hosting Decision
@@ -568,11 +570,11 @@ Human approval or review is required for:
 
 Version `0.1` is launch-ready when:
 
-- `skillgraph index` creates a valid local index.
-- `skillgraph search` returns useful local skill matches.
-- `skillgraph resolve` returns selected nodes, context depths, frontier nodes, conflicts, and explanations.
-- `skillgraph expand` can return full installed skill context.
-- `skillgraph explain --last` explains the previous resolution.
+- `skill-graph index` creates a valid local index.
+- `skill-graph search` returns useful local skill matches.
+- `skill-graph resolve` returns selected nodes, context depths, frontier nodes, conflicts, and explanations.
+- `skill-graph expand` can return full installed skill context.
+- `skill-graph explain --last` explains the previous resolution.
 - Tests cover parsing, indexing, searching, resolving, and expansion.
 - The README includes installation and quickstart instructions.
 - The agent skill can guide Codex or Claude through the resolver loop.

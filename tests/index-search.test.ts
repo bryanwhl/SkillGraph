@@ -9,7 +9,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       now: "2026-05-06T00:00:00.000Z",
     });
 
@@ -45,7 +45,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       remoteNodes: [remoteNode],
       now: "2026-05-06T00:00:00.000Z",
     });
@@ -62,7 +62,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       now: "2026-05-06T00:00:00.000Z",
     });
 
@@ -80,7 +80,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       now: "2026-05-06T00:00:00.000Z",
     });
 
@@ -98,7 +98,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       now: "2026-05-06T00:00:00.000Z",
     });
 
@@ -117,7 +117,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       now: "2026-05-06T00:00:00.000Z",
     });
 
@@ -132,7 +132,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       now: "2026-05-06T00:00:00.000Z",
     });
 
@@ -147,7 +147,7 @@ describe("indexSkills and searchSkills", () => {
     const graph = await indexSkills({
       cwd: fixturePath(),
       skillRoots: [fixturePath("skills")],
-      graphFiles: [fixturePath("skillgraph.yaml")],
+      graphFiles: [fixturePath("skill-graph.yaml")],
       now: "2026-05-06T00:00:00.000Z",
     });
 

@@ -1,6 +1,6 @@
 # Security
 
-SkillGraph will interact with remote skill repositories, so security must be part of the design from the beginning.
+skill-graph will interact with remote skill repositories, so security must be part of the design from the beginning.
 
 ## MVP Security Requirements
 

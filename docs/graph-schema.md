@@ -264,7 +264,7 @@ Semantic search stores local vectors separately from the canonical graph:
 }
 ```
 
-Embedding indexes are optional local state under `.skillgraph/embeddings.json`. They are not source-of-truth graph data and can be deleted or rebuilt.
+Embedding indexes are optional local state under `.skill-graph/embeddings.json`. They are not source-of-truth graph data and can be deleted or rebuilt.
 
 ## Schema Principles
 

@@ -1,4 +1,4 @@
-# SkillGraph Demo
+# skill-graph Demo
 
 This folder contains a small self-contained demo graph and demo skills.
 

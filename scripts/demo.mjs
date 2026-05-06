@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const cli = path.join(repoRoot, "dist", "cli", "index.js");
 const demoRoot = path.join(repoRoot, "examples", "demo");
-const workspace = mkdtempSync(path.join(tmpdir(), "skillgraph-demo-"));
+const workspace = mkdtempSync(path.join(tmpdir(), "skill-graph-demo-"));
 
 const baseArgs = [
   cli,
@@ -17,7 +17,7 @@ const baseArgs = [
   "--skill-root",
   path.join(demoRoot, "skills"),
   "--graph",
-  path.join(demoRoot, "skillgraph.yaml"),
+  path.join(demoRoot, "skill-graph.yaml"),
 ];
 
 try {

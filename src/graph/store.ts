@@ -8,14 +8,14 @@ import { slugify } from "../shared/strings.js";
 import {
   type LoadedContextEntry,
   type Resolution,
-  type SkillGraph,
+  type GraphIndex,
   loadedContextEntrySchema,
   resolutionSchema,
-  skillGraphSchema,
+  graphIndexSchema,
 } from "./schema.js";
 
 export function stateDirectory(cwd: string): string {
-  return path.join(cwd, ".skillgraph");
+  return path.join(cwd, ".skill-graph");
 }
 
 export function graphPath(cwd: string): string {
@@ -50,15 +50,15 @@ export function skillsShCachePath(cwd: string, query: string): string {
   );
 }
 
-export async function saveGraph(cwd: string, graph: SkillGraph): Promise<void> {
+export async function saveGraph(cwd: string, graph: GraphIndex): Promise<void> {
   await mkdir(stateDirectory(cwd), { recursive: true });
   await writeFile(graphPath(cwd), `${JSON.stringify(graph, null, 2)}\n`, "utf8");
   await writeFile(edgesPath(cwd), `${JSON.stringify(graph.edges, null, 2)}\n`, "utf8");
 }
 
-export async function loadGraph(cwd: string): Promise<SkillGraph> {
+export async function loadGraph(cwd: string): Promise<GraphIndex> {
   const raw = await readFile(graphPath(cwd), "utf8");
-  return skillGraphSchema.parse(JSON.parse(raw));
+  return graphIndexSchema.parse(JSON.parse(raw));
 }
 
 export async function saveLastResolution(

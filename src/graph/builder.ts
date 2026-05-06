@@ -6,11 +6,11 @@ import { buildOperationalSummary } from "../context/operational-summary.js";
 import { estimateTokens } from "../context/token-estimate.js";
 import {
   type SkillEdge,
-  type SkillGraph,
+  type GraphIndex,
   type SkillNode,
   type SourceType,
   skillEdgeSchema,
-  skillGraphSchema,
+  graphIndexSchema,
   skillNodeSchema,
 } from "./schema.js";
 
@@ -54,7 +54,7 @@ type ManualEdge = {
   };
 };
 
-export async function indexSkills(options: IndexSkillsOptions): Promise<SkillGraph> {
+export async function indexSkills(options: IndexSkillsOptions): Promise<GraphIndex> {
   const indexedAt = options.now ?? new Date().toISOString();
   const skillFiles = await findSkillFiles(options.skillRoots);
   const parsedNodes = await Promise.all(
@@ -81,7 +81,7 @@ export async function indexSkills(options: IndexSkillsOptions): Promise<SkillGra
     nodesById.set(node.id, mergeNode(nodesById.get(node.id), node));
   }
 
-  return skillGraphSchema.parse({
+  return graphIndexSchema.parse({
     version: 1,
     indexedAt,
     nodes: [...nodesById.values()].sort((a, b) => a.id.localeCompare(b.id)),
@@ -119,7 +119,7 @@ async function collectSkillFiles(currentPath: string, files: Set<string>): Promi
 }
 
 function ignoredDirectory(name: string): boolean {
-  return [".git", "node_modules", "dist", "coverage", ".skillgraph"].includes(name);
+  return [".git", "node_modules", "dist", "coverage", ".skill-graph"].includes(name);
 }
 
 async function readManualGraphs(

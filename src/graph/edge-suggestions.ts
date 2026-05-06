@@ -5,7 +5,7 @@ import {
 } from "../embeddings/indexer.js";
 import {
   type EdgeType,
-  type SkillGraph,
+  type GraphIndex,
   type SkillNode,
   edgeTypeSchema,
 } from "./schema.js";
@@ -32,14 +32,14 @@ export type SuggestEmbeddingEdgesOptions = {
 };
 
 export function suggestEmbeddingEdges(
-  graph: SkillGraph,
+  graph: GraphIndex,
   index: EmbeddingIndex,
   options: SuggestEmbeddingEdgesOptions = {},
 ): EdgeSuggestion[] {
   const freshness = embeddingIndexFreshness(graph, index);
   if (!freshness.fresh) {
     throw new Error(
-      `Semantic embedding index is stale (${freshness.reason}). Run \`skillgraph embeddings index\` again.`,
+      `Semantic embedding index is stale (${freshness.reason}). Run \`skill-graph embeddings index\` again.`,
     );
   }
 

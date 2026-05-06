@@ -21,7 +21,7 @@ export function defaultSkillRoots(cwd: string): string[] {
 }
 
 export function defaultGraphFiles(cwd: string): string[] {
-  return [path.join(cwd, "skillgraph.yaml"), path.join(cwd, "examples", "skillgraph.yaml")];
+  return [path.join(cwd, "skill-graph.yaml"), path.join(cwd, "examples", "skill-graph.yaml")];
 }
 
 export function collectOption(value: string, previous: string[] = []): string[] {

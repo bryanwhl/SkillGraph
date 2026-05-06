@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local Qwen3 embedding helper for SkillGraph.
+"""Local Qwen3 embedding helper for skill-graph.
 
 Input:  JSON on stdin: {"texts": ["..."]}
 Output: JSON on stdout: {"vectors": [[...]]}
@@ -20,6 +20,11 @@ import sys
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="Qwen/Qwen3-Embedding-0.6B")
+    parser.add_argument(
+        "--trust-remote-code",
+        action="store_true",
+        help="allow sentence-transformers to execute model repository code",
+    )
     args = parser.parse_args()
 
     try:
@@ -37,7 +42,7 @@ def main() -> int:
         sys.stderr.write('Expected stdin JSON shape: {"texts": ["..."]}\n')
         return 2
 
-    model = SentenceTransformer(args.model, trust_remote_code=True)
+    model = SentenceTransformer(args.model, trust_remote_code=args.trust_remote_code)
     vectors = model.encode(
         texts,
         normalize_embeddings=True,

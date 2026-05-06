@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import {
   type ContextDepth,
-  type SkillGraph,
+  type GraphIndex,
   type SkillNode,
 } from "../graph/schema.js";
 
@@ -16,7 +16,7 @@ export type ExpandedContext = {
 };
 
 export async function expandNode(
-  graph: SkillGraph,
+  graph: GraphIndex,
   nodeId: string,
   requestedDepth: ExpandDepth,
 ): Promise<ExpandedContext> {

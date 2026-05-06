@@ -61,7 +61,7 @@ describe("skills.sh adapter", () => {
     expect(results[0]?.name).toBe("frontend-design");
   });
 
-  it("converts a remote result into a SkillGraph node", () => {
+  it("converts a remote result into a skill-graph node", () => {
     const [result] = parseSkillsShFindOutput(sampleFindOutput);
 
     const node = skillsShResultToNode(result!, {

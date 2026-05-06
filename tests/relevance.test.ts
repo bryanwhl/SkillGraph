@@ -8,7 +8,7 @@ async function relevanceGraph() {
   return indexSkills({
     cwd: fixturePath(),
     skillRoots: [fixturePath("skills")],
-    graphFiles: [fixturePath("skillgraph.yaml")],
+    graphFiles: [fixturePath("skill-graph.yaml")],
     now: "2026-05-06T00:00:00.000Z",
   });
 }

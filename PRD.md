@@ -1,8 +1,8 @@
-# Product Requirements Document: SkillGraph
+# Product Requirements Document: skill-graph
 
 ## 1. Summary
 
-SkillGraph is a runtime and indexing layer that organizes AI agent skills into a graph for progressive disclosure. It helps an agent discover, select, load, and expand skills during a task without flooding the context window or relying on a one-shot flat skill search.
+skill-graph is a runtime and indexing layer that organizes AI agent skills into a graph for progressive disclosure. It helps an agent discover, select, load, and expand skills during a task without flooding the context window or relying on a one-shot flat skill search.
 
 The first product should be a local CLI plus an agent skill that can:
 
@@ -33,7 +33,7 @@ This creates several problems:
 
 ## 3. Product Vision
 
-SkillGraph makes skills navigable and progressively disclosed.
+skill-graph makes skills navigable and progressively disclosed.
 
 Instead of asking, "Which single skill should I load?", the agent asks:
 
@@ -179,7 +179,7 @@ Flat skill search answers:
 
 > "What skill matches this query?"
 
-SkillGraph answers:
+skill-graph answers:
 
 > "What capability area is this task in, what context should be loaded first, what dependencies or complements matter, and what should the agent expand next as it learns more?"
 
@@ -198,9 +198,9 @@ The graph should be internally represented as a directed graph or DAG, with tree
 
 `find-skills` is a discovery skill. It helps search skills.sh, evaluate candidates, and install skills.
 
-SkillGraph should include discovery, but its primary value is runtime context orchestration.
+skill-graph should include discovery, but its primary value is runtime context orchestration.
 
-| Capability | find-skills | SkillGraph |
+| Capability | find-skills | skill-graph |
 | --- | --- | --- |
 | Search skills.sh | Yes | Yes |
 | Recommend skills | Yes | Yes |
@@ -276,12 +276,12 @@ The MVP should be a local CLI plus one agent skill.
 Proposed commands:
 
 ```bash
-skillgraph index
-skillgraph search "frontend design"
-skillgraph resolve "make this dashboard production-ready"
-skillgraph expand frontend-design --depth full
-skillgraph install frontend-design
-skillgraph explain
+skill-graph index
+skill-graph search "frontend design"
+skill-graph resolve "make this dashboard production-ready"
+skill-graph expand frontend-design --depth full
+skill-graph install frontend-design
+skill-graph explain
 ```
 
 ### 11.2 Agent Skill
@@ -344,7 +344,7 @@ The system should ingest:
 
 The system must support:
 
-- Manual edges from `skillgraph.yaml`.
+- Manual edges from `skill-graph.yaml`.
 - Heuristic edges from tags and paths.
 - Embedding-based similarity.
 - LLM-assisted relationship proposals.
@@ -352,7 +352,7 @@ The system must support:
 
 The system should never silently treat inferred edges as canonical. Inferred edges should carry confidence and source metadata.
 
-Current implementation: `skillgraph edges suggest` proposes embedding-similarity edges from the saved local embedding index with confidence, provenance, and `reviewStatus: proposed`. It does not mutate canonical graph edges.
+Current implementation: `skill-graph edges suggest` proposes embedding-similarity edges from the saved local embedding index with confidence, provenance, and `reviewStatus: proposed`. It does not mutate canonical graph edges.
 
 ### 13.3 Runtime Resolution
 
@@ -378,7 +378,7 @@ Semantic retrieval must be optional and must respect the privacy requirements in
 
 Current implementation: BM25 is the default local retrieval strategy for `search` and `resolve`, with deterministic lexical retrieval still available as a baseline strategy.
 
-Current implementation also supports optional local semantic embeddings. `skillgraph embeddings index` writes `.skillgraph/embeddings.json`, `skillgraph search --strategy semantic` ranks saved vectors by cosine similarity, and `--strategy hybrid` fuses BM25, lexical, and semantic results when embeddings exist. The default real provider is local Qwen3 through Python and `sentence-transformers`; deterministic embeddings are available for tests and demos. Remote embedding uploads are not implemented.
+Current implementation also supports optional local semantic embeddings. `skill-graph embeddings index` writes `.skill-graph/embeddings.json`, `skill-graph search --strategy semantic` ranks saved vectors by cosine similarity, and `--strategy hybrid` fuses BM25, lexical, and semantic results when embeddings exist. The default real provider is local Qwen3 through Python and `sentence-transformers`; deterministic embeddings are available for tests and demos. Remote embedding uploads are not implemented.
 
 ### 13.4 Installation
 

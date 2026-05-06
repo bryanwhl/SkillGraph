@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { z } from "zod";
-import { type SkillGraph, type SkillNode } from "../graph/schema.js";
+import { type GraphIndex, type SkillNode } from "../graph/schema.js";
 import {
   type SearchProviderName,
   type SearchResult,
@@ -29,6 +29,7 @@ export type DeterministicEmbeddingOptions = {
 export type Qwen3LocalEmbeddingOptions = {
   model?: string;
   python?: string;
+  trustRemoteCode?: boolean;
 };
 
 export const embeddingVectorSchema = z.object({
@@ -86,7 +87,8 @@ export function createQwen3LocalEmbeddingProvider(
   options: Qwen3LocalEmbeddingOptions = {},
 ): EmbeddingProvider {
   const model = options.model ?? DEFAULT_QWEN3_EMBEDDING_MODEL;
-  const python = options.python ?? process.env.SKILLGRAPH_PYTHON ?? "python";
+  const python = options.python ?? process.env.SKILL_GRAPH_PYTHON ?? "python";
+  const trustRemoteCode = options.trustRemoteCode ?? false;
 
   return {
     name: "qwen3-local",
@@ -95,6 +97,7 @@ export function createQwen3LocalEmbeddingProvider(
       return runQwen3EmbeddingScript({
         python,
         model,
+        trustRemoteCode,
         texts,
       });
     },
@@ -102,6 +105,7 @@ export function createQwen3LocalEmbeddingProvider(
       const [vector] = await runQwen3EmbeddingScript({
         python,
         model,
+        trustRemoteCode,
         texts: [text],
       });
       if (!vector) {
@@ -117,6 +121,7 @@ export function embeddingProviderForName(
   options: {
     model?: string;
     dimensions?: number;
+    trustRemoteCode?: boolean;
   } = {},
 ): EmbeddingProvider {
   if (name === "deterministic") {
@@ -124,13 +129,16 @@ export function embeddingProviderForName(
       options.dimensions === undefined ? {} : { dimensions: options.dimensions },
     );
   }
-  return createQwen3LocalEmbeddingProvider(
-    options.model === undefined ? {} : { model: options.model },
-  );
+  return createQwen3LocalEmbeddingProvider({
+    ...(options.model === undefined ? {} : { model: options.model }),
+    ...(options.trustRemoteCode === undefined
+      ? {}
+      : { trustRemoteCode: options.trustRemoteCode }),
+  });
 }
 
 export async function buildEmbeddingIndex(
-  graph: SkillGraph,
+  graph: GraphIndex,
   options: BuildEmbeddingIndexOptions,
 ): Promise<EmbeddingIndex> {
   const texts = graph.nodes.map(nodeToEmbeddingText);
@@ -156,7 +164,7 @@ export async function buildEmbeddingIndex(
 }
 
 export function searchSemanticSkills(
-  graph: SkillGraph,
+  graph: GraphIndex,
   index: EmbeddingIndex,
   queryVector: number[],
   options: SemanticSearchOptions,
@@ -188,7 +196,7 @@ export function searchSemanticSkills(
 }
 
 export function embeddingIndexFreshness(
-  graph: SkillGraph,
+  graph: GraphIndex,
   index: EmbeddingIndex,
 ): EmbeddingIndexFreshness {
   if (index.vectors.length !== graph.nodes.length) {
@@ -271,6 +279,7 @@ function sha256(value: string): string {
 async function runQwen3EmbeddingScript(input: {
   python: string;
   model: string;
+  trustRemoteCode: boolean;
   texts: string[];
 }): Promise<number[][]> {
   const scriptPath = path.resolve(
@@ -280,7 +289,11 @@ async function runQwen3EmbeddingScript(input: {
     "scripts",
     "embed-qwen3.py",
   );
-  const stdout = await runPythonJson(input.python, [scriptPath, "--model", input.model], {
+  const args = [scriptPath, "--model", input.model];
+  if (input.trustRemoteCode) {
+    args.push("--trust-remote-code");
+  }
+  const stdout = await runPythonJson(input.python, args, {
     texts: input.texts,
   });
   const parsed = JSON.parse(stdout) as { vectors?: number[][] };

@@ -1,7 +1,7 @@
 import MiniSearch, {
   type SearchResult as MiniSearchResult,
 } from "minisearch";
-import { type SkillGraph, type SkillNode } from "../graph/schema.js";
+import { type GraphIndex, type SkillNode } from "../graph/schema.js";
 import { tokenize, unique } from "../shared/strings.js";
 
 export const SEARCH_PROVIDER_NAMES = ["bm25", "lexical", "semantic", "hybrid"] as const;
@@ -24,11 +24,11 @@ export type SearchResult = {
 
 export type SearchProvider = {
   name: SearchProviderName;
-  search(graph: SkillGraph, query: string, limit: number): SearchResult[];
+  search(graph: GraphIndex, query: string, limit: number): SearchResult[];
 };
 
 export function searchSkills(
-  graph: SkillGraph,
+  graph: GraphIndex,
   query: string,
   options: number | SearchSkillsOptions = {},
 ): SearchResult[] {
@@ -126,7 +126,7 @@ const semanticSearchProvider: SearchProvider = {
   name: "semantic",
   search() {
     throw new Error(
-      "Semantic search requires a saved embedding index. Run `skillgraph embeddings index` first.",
+      "Semantic search requires a saved embedding index. Run `skill-graph embeddings index` first.",
     );
   },
 };

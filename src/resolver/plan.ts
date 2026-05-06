@@ -4,7 +4,7 @@ import {
   type Resolution,
   type SelectedNode,
   type SkillEdge,
-  type SkillGraph,
+  type GraphIndex,
   type SkillNode,
   resolutionSchema,
 } from "../graph/schema.js";
@@ -24,7 +24,7 @@ export type ResolveTaskOptions = {
 };
 
 export function resolveTask(
-  graph: SkillGraph,
+  graph: GraphIndex,
   options: ResolveTaskOptions,
 ): Resolution {
   const searchResults =
@@ -144,7 +144,7 @@ function firstDowngradeCandidateIndex(selected: SelectedNode[]): number {
 
 export function explainResolution(resolution: Resolution): string {
   const lines = [
-    `# SkillGraph Resolution`,
+    `# skill-graph Resolution`,
     "",
     `Task: ${resolution.task}`,
     `Agent: ${resolution.agent}`,
@@ -217,7 +217,7 @@ function selectedNode(
 }
 
 function ancestorsFor(
-  graph: SkillGraph,
+  graph: GraphIndex,
   nodeId: string,
 ): Array<{ node: SkillNode; reason: string }> {
   const ancestors: Array<{ node: SkillNode; reason: string }> = [];
@@ -297,12 +297,12 @@ function touches(edge: SkillEdge, nodeId: string): boolean {
   return edge.from === nodeId || edge.to === nodeId;
 }
 
-function nodeSource(graph: SkillGraph, nodeId: string): string | undefined {
+function nodeSource(graph: GraphIndex, nodeId: string): string | undefined {
   const node = graph.nodes.find((candidate) => candidate.id === nodeId);
   return node?.source.url ?? node?.source.path;
 }
 
-function installCommandFor(graph: SkillGraph, nodeId: string): string | undefined {
+function installCommandFor(graph: GraphIndex, nodeId: string): string | undefined {
   const node = graph.nodes.find((candidate) => candidate.id === nodeId);
   if (!node) {
     return undefined;

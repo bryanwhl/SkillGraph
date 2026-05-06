@@ -1,6 +1,6 @@
 # Runtime Protocol
 
-This document describes how an AI agent should use SkillGraph during a task.
+This document describes how an AI agent should use skill-graph during a task.
 
 ## Principle
 
@@ -18,9 +18,9 @@ The runtime loop is:
 
 ## Agent Behavior
 
-### 1. Decide Whether SkillGraph Is Relevant
+### 1. Decide Whether skill-graph Is Relevant
 
-Use SkillGraph when the user task involves a specialized domain, repeated workflow, or likely existing skill.
+Use skill-graph when the user task involves a specialized domain, repeated workflow, or likely existing skill.
 
 Examples:
 
@@ -38,7 +38,7 @@ Examples:
 The agent calls:
 
 ```bash
-skillgraph resolve "<task>"
+skill-graph resolve "<task>"
 ```
 
 The resolver returns:
@@ -89,7 +89,7 @@ The prompt should include:
 After inspecting the repo or task details, the agent may call:
 
 ```bash
-skillgraph expand react-best-practices --depth full
+skill-graph expand react-best-practices --depth full
 ```
 
 Expansion should be justified by new evidence:
@@ -123,7 +123,7 @@ At the end of a task, the agent should summarize:
 ### `resolve`
 
 ```bash
-skillgraph resolve "<task>" \
+skill-graph resolve "<task>" \
   --agent codex \
   --budget 4000 \
   --format json
@@ -131,13 +131,13 @@ skillgraph resolve "<task>" \
 
 Returns a ranked context plan.
 
-Use `--strategy hybrid` when a local embedding index exists and the task benefits from both exact lexical matching and conceptual matching. Use `--strategy semantic` only after `skillgraph embeddings index` has been run.
+Use `--strategy hybrid` when a local embedding index exists and the task benefits from both exact lexical matching and conceptual matching. Use `--strategy semantic` only after `skill-graph embeddings index` has been run.
 
 ### `embeddings`
 
 ```bash
-skillgraph embeddings index --provider qwen3-local
-skillgraph embeddings info
+skill-graph embeddings index --provider qwen3-local
+skill-graph embeddings info
 ```
 
 Builds and inspects the optional local semantic index. The real provider runs locally; any future provider that uploads local task or repository text requires explicit human approval.
@@ -145,7 +145,7 @@ Builds and inspects the optional local semantic index. The real provider runs lo
 ### `edges suggest`
 
 ```bash
-skillgraph edges suggest --format markdown
+skill-graph edges suggest --format markdown
 ```
 
 Proposes inferred graph edges from the saved local embedding index. Treat these as review items only; they are not active resolver policy unless a human accepts and records them in graph metadata.
@@ -153,7 +153,7 @@ Proposes inferred graph edges from the saved local embedding index. Treat these 
 ### `expand`
 
 ```bash
-skillgraph expand <node-id> --depth full --format markdown
+skill-graph expand <node-id> --depth full --format markdown
 ```
 
 Returns deeper context for one node.
@@ -161,7 +161,7 @@ Returns deeper context for one node.
 ### `install`
 
 ```bash
-skillgraph install <node-id>
+skill-graph install <node-id>
 ```
 
 Installs the source skill after approval.
@@ -169,7 +169,7 @@ Installs the source skill after approval.
 ### `explain`
 
 ```bash
-skillgraph explain --last
+skill-graph explain --last
 ```
 
 Explains the last resolution path.

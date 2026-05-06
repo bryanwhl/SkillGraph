@@ -1,12 +1,12 @@
 # Marketplace Strategy
 
-SkillGraph should complement existing marketplaces rather than compete with them at the beginning.
+skill-graph should complement existing marketplaces rather than compete with them at the beginning.
 
 ## Relationship to skills.sh
 
 skills.sh is a marketplace and discovery surface for open agent skills.
 
-SkillGraph should use skills.sh as a source of truth for:
+skill-graph should use skills.sh as a source of truth for:
 
 - Public skill discovery.
 - Skill pages.
@@ -54,7 +54,7 @@ The hosted site should be generated from the same graph data used by the CLI.
 
 ## Skill Author Metadata
 
-Over time, skill authors could add optional `skillgraph.yaml` metadata:
+Over time, skill authors could add optional `skill-graph.yaml` metadata:
 
 ```yaml
 domains:

@@ -1,6 +1,6 @@
-# SkillGraph
+# skill-graph
 
-SkillGraph is a proposed runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.
+skill-graph is a proposed runtime layer for AI agents that turns flat skill libraries into graph-structured, progressively disclosed capability context.
 
 Current agent skill systems usually work like this:
 
@@ -8,7 +8,7 @@ Current agent skill systems usually work like this:
 2. A matching skill is loaded when the model decides it is relevant.
 3. Remote marketplace discovery is separate from the agent's immediate task context.
 
-SkillGraph explores a different model:
+skill-graph explores a different model:
 
 1. Skills are indexed as typed graph nodes.
 2. Nodes have relationships such as `requires`, `specializes`, `complements`, `conflicts_with`, and `supersedes`.
@@ -19,7 +19,7 @@ The goal is not to replace skills.sh, Claude Skills, Codex Skills, or local `SKI
 
 ## Status
 
-This repository now includes the first local-first CLI implementation for SkillGraph.
+This repository now includes the first local-first CLI implementation for skill-graph.
 
 The current launch scope is intentionally small: local skill indexing, BM25 local search with deterministic lexical and optional semantic providers, deterministic graph resolution, context expansion, last-resolution explanations, and a companion agent skill. Hosted sync, user accounts, telemetry, remote embedding uploads, and automatic remote installs are out of scope for the current local-first version.
 
@@ -48,6 +48,12 @@ The real semantic provider runs locally through Python and `sentence-transformer
 
 ```bash
 node dist/cli/index.js embeddings index --provider deterministic
+```
+
+Some embedding model repositories require custom model code. In that case, review the model source first, then opt in explicitly:
+
+```bash
+node dist/cli/index.js embeddings index --provider qwen3-local --trust-remote-code
 ```
 
 If skill text changes after embeddings are built, semantic search will ask you to rebuild the local embedding index.
@@ -129,18 +135,18 @@ The demo indexes example skills, builds deterministic demo embeddings, suggests 
 
 ## CLI Commands
 
-- `skillgraph index`: scans skill roots and manual graph files, then writes `.skillgraph/index.json`.
-- `skillgraph index --skills-sh-query "<query>"`: includes cached, not-installed skills.sh candidates as remote graph nodes.
-- `skillgraph remote-cache "<query>"`: searches skills.sh through the official Skills CLI, caches metadata under `.skillgraph/cache/`, and prints approval-required install commands.
-- `skillgraph embeddings index`: builds `.skillgraph/embeddings.json`; default provider is local Qwen3, and `--provider deterministic` is available for tests and demos.
-- `skillgraph embeddings info`: shows saved semantic index provider, model, dimensions, and vector count.
-- `skillgraph edges suggest`: proposes embedding-similarity graph edges with `reviewStatus: proposed`; it does not mutate canonical graph edges.
-- `skillgraph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline, `--strategy semantic` to use the saved embedding index, or `--strategy hybrid` to fuse BM25, lexical, and semantic rankings when embeddings exist.
-- `skillgraph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
-- `skillgraph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available. `summary` maps to the deterministic `l2` operational summary.
-- `skillgraph context`: shows context layers expanded in the current workspace.
-- `skillgraph explain --last`: renders the previous resolution from `.skillgraph/last-resolution.json`.
-- `skillgraph install <node-id>`: graph-aware dry-run guidance with the exact approval-required remote install command when available.
+- `skill-graph index`: scans skill roots and manual graph files, then writes `.skill-graph/index.json`.
+- `skill-graph index --skills-sh-query "<query>"`: includes cached, not-installed skills.sh candidates as remote graph nodes.
+- `skill-graph remote-cache "<query>"`: searches skills.sh through the official Skills CLI, caches metadata under `.skill-graph/cache/`, and prints approval-required install commands.
+- `skill-graph embeddings index`: builds `.skill-graph/embeddings.json`; default provider is local Qwen3, and `--provider deterministic` is available for tests and demos.
+- `skill-graph embeddings info`: shows saved semantic index provider, model, dimensions, and vector count.
+- `skill-graph edges suggest`: proposes embedding-similarity graph edges with `reviewStatus: proposed`; it does not mutate canonical graph edges.
+- `skill-graph search "<query>"`: ranks graph nodes with BM25 by default; pass `--strategy lexical` to compare against the deterministic baseline, `--strategy semantic` to use the saved embedding index, or `--strategy hybrid` to fuse BM25, lexical, and semantic rankings when embeddings exist.
+- `skill-graph resolve "<task>"`: returns selected nodes, depths, frontier nodes, conflicts, missing remote nodes, token estimates, scoring provider provenance, and explanations.
+- `skill-graph expand <node-id> --depth <depth>`: returns `l0`, `l1`, `l2`, `l3`, `l4`, `summary`, `capability_card`, or `full` context when available. `summary` maps to the deterministic `l2` operational summary.
+- `skill-graph context`: shows context layers expanded in the current workspace.
+- `skill-graph explain --last`: renders the previous resolution from `.skill-graph/last-resolution.json`.
+- `skill-graph install <node-id>`: graph-aware dry-run guidance with the exact approval-required remote install command when available.
 
 ## Development
 
@@ -183,7 +189,7 @@ The test suite covers:
 
 ## Project Skills
 
-This repository vendors project-level agent skills under [.agents/skills](./.agents/skills) so future agent sessions can use the same build-support workflows while developing SkillGraph.
+This repository vendors project-level agent skills under [.agents/skills](./.agents/skills) so future agent sessions can use the same build-support workflows while developing skill-graph.
 
 Current project skills:
 

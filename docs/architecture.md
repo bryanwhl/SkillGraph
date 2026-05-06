@@ -1,6 +1,6 @@
 # Architecture
 
-SkillGraph should be designed as a local-first graph and resolver that can later power a hosted website.
+skill-graph should be designed as a local-first graph and resolver that can later power a hosted website.
 
 ## System Overview
 
@@ -57,7 +57,7 @@ The graph builder creates nodes and edges.
 
 Edge sources:
 
-- Explicit `skillgraph.yaml` metadata.
+- Explicit `skill-graph.yaml` metadata.
 - Existing marketplace categories.
 - Filesystem paths.
 - Tags and trigger terms.
@@ -65,18 +65,18 @@ Edge sources:
 - LLM-assisted classification.
 - Human-reviewed edits.
 
-The current implementation can propose embedding-similarity edges with `skillgraph edges suggest`. These suggestions include provenance and `reviewStatus: proposed`; they are not written into canonical graph files automatically.
+The current implementation can propose embedding-similarity edges with `skill-graph edges suggest`. These suggestions include provenance and `reviewStatus: proposed`; they are not written into canonical graph files automatically.
 
 ### Local Graph Store
 
 The first version should use a simple local file store:
 
-- `.skillgraph/index.json` for indexed nodes and sources.
-- `.skillgraph/edges.json` for edges.
-- `.skillgraph/last-resolution.json` for explainability.
-- `.skillgraph/loaded-context.json` for expanded context tracking.
-- `.skillgraph/embeddings.json` for optional local semantic vectors.
-- `.skillgraph/cache/` for fetched remote metadata.
+- `.skill-graph/index.json` for indexed nodes and sources.
+- `.skill-graph/edges.json` for edges.
+- `.skill-graph/last-resolution.json` for explainability.
+- `.skill-graph/loaded-context.json` for expanded context tracking.
+- `.skill-graph/embeddings.json` for optional local semantic vectors.
+- `.skill-graph/cache/` for fetched remote metadata.
 
 A future version could use SQLite for better search, caching, and migrations.
 
@@ -84,7 +84,7 @@ A future version could use SQLite for better search, caching, and migrations.
 
 Search should sit between the graph store and resolver.
 
-The resolver should depend on a provider interface instead of one scoring implementation. This allows SkillGraph to improve retrieval without changing graph expansion, conflict detection, context depth assignment, or explanations.
+The resolver should depend on a provider interface instead of one scoring implementation. This allows skill-graph to improve retrieval without changing graph expansion, conflict detection, context depth assignment, or explanations.
 
 Planned providers:
 
@@ -102,13 +102,13 @@ The provider output should include:
 - retrieval source, such as lexical, BM25, semantic, remote, or graph expansion;
 - explanation metadata for resolver output.
 
-Semantic providers must be optional. Local semantic search uses a saved `.skillgraph/embeddings.json` file and embeds only normalized skill text plus the current query. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
+Semantic providers must be optional. Local semantic search uses a saved `.skill-graph/embeddings.json` file and embeds only normalized skill text plus the current query. Any provider that uploads task text, repository context, or private skill content requires explicit human approval before use.
 
-The current implementation ships deterministic lexical, BM25, semantic, and hybrid providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons. Semantic search is enabled only after `skillgraph embeddings index` writes a local vector index. Hybrid retrieval fuses BM25 and lexical rankings by default and adds semantic rankings automatically when embeddings exist.
+The current implementation ships deterministic lexical, BM25, semantic, and hybrid providers. BM25 is the default for `search` and `resolve`; lexical remains available as `--strategy lexical` for relevance comparisons. Semantic search is enabled only after `skill-graph embeddings index` writes a local vector index. Hybrid retrieval fuses BM25 and lexical rankings by default and adds semantic rankings automatically when embeddings exist.
 
 The default real semantic provider is `qwen3-local`, which shells out to a local Python helper using `sentence-transformers` and `Qwen/Qwen3-Embedding-0.6B`. The deterministic embedding provider exists for tests and demos so CI and local verification do not need model weights.
 
-The semantic index is rebuildable derived state. SkillGraph checks saved vector hashes against current normalized node text before using semantic results.
+The semantic index is rebuildable derived state. skill-graph checks saved vector hashes against current normalized node text before using semantic results.
 
 Remote discovery is implemented as a dry-run adapter over `npx skills find`. It parses remote candidates, caches them, and can include them as `installed: false` graph nodes, but it does not install or execute remote skill content.
 
@@ -126,7 +126,7 @@ Responsibilities:
 - Return an expansion frontier.
 - Explain the selected graph path.
 
-The current resolver can use `l2` operational summaries as a middle context layer. When a selected full skill would exceed the budget, SkillGraph downgrades from `l3` to `l2` before falling back to `l1`. Local skills can also expose safe relative Markdown links as `l4` artifacts for on-demand expansion.
+The current resolver can use `l2` operational summaries as a middle context layer. When a selected full skill would exceed the budget, skill-graph downgrades from `l3` to `l2` before falling back to `l1`. Local skills can also expose safe relative Markdown links as `l4` artifacts for on-demand expansion.
 
 Expanded context layers are tracked locally so an agent can report what it actually loaded instead of only what the resolver recommended.
 
@@ -145,7 +145,7 @@ It must ask for user approval before remote install.
 
 The agent skill teaches agents how to use the resolver:
 
-1. Call `skillgraph resolve` before specialized work.
+1. Call `skill-graph resolve` before specialized work.
 2. Start with shallow context.
 3. Ask before installing remote skills.
 4. Expand nodes as the task becomes clearer.
@@ -178,7 +178,7 @@ sequenceDiagram
   participant N as Normalizer
   participant G as Graph Store
 
-  U->>C: skillgraph index
+  U->>C: skill-graph index
   C->>S: Fetch local and remote skill metadata
   S-->>C: Raw skill metadata
   C->>N: Normalize
